@@ -9,13 +9,13 @@ tests = ["OCR", "RFID", "Servo"]
 def selectTest():
     print("Select a test to run:")
     for test in tests:
-        print(tests.index(test) + ": " + test)
+        print(tests.index(test), ":", test)
 
     selectedTest = input()
 
     try:
         testIndex = tests.index(selectedTest)
-        print("Selected " + selectedTest)
+        print("Selected", selectedTest)
         if selectedTest == "OCR":
             OCRTest()
         elif selectedTest == "RFID":
