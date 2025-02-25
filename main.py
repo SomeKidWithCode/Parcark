@@ -28,12 +28,12 @@ def selectTest():
 
 # OCR test function
 def OCRTest():
-    pass
+    print("Started OCR test")
 
 # RFID test function
 def RFIDTest():
-    pass
+    print("Started RFID test")
 
 # Servo test function
 def ServoTest():
-    pass
+    print("Started servo test")
