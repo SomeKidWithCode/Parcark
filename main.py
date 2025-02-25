@@ -1,1 +1,3 @@
-# The start of something terrible...
+# Imports
+import cv2 as cv
+import os
