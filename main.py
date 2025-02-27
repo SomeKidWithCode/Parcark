@@ -1,6 +1,6 @@
 # Imports
 import cv2 as cv
-import os
+import os, sys, inspect
 
 # Array of tests to do
 tests = ["OCR", "RFID", "Servo"]
