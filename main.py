@@ -14,11 +14,13 @@ def selectTest():
     for test in tests:
         print(tests.index(test), ":", test)
 
-    selectedTest = input()
+    selectedTestNum = input()
 
     try:
+        selectedTest = tests[selectedTestNum]
         #testIndex = tests.index(selectedTest)
         print("Selected", selectedTest)
+
         if selectedTest == "OCR":
             OCRTest()
         elif selectedTest == "RFID":
