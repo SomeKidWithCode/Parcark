@@ -53,6 +53,7 @@ def OCRTest():
     print("Started OCR test")
     img = getCameraFrame()
     imgarr = np.array(img)
+    print(imgarr)
     text = pytesseract.image_to_string(imgarr)
     print("Gotten text", text)
 
