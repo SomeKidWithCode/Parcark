@@ -14,9 +14,10 @@ def selectTest():
     for test in tests:
         print(tests.index(test), ":", test)
 
-    selectedTestNum = input()
+    selectedTestNum = int(input())
 
     try:
+
         selectedTest = tests[selectedTestNum]
         #testIndex = tests.index(selectedTest)
         print("Selected", selectedTest)
