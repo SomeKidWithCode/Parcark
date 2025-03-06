@@ -1,6 +1,9 @@
 # Imports
 import cv2 as cv
 import os, sys, inspect
+from PIL import Image
+import numpy as np
+import pytesseract
 
 # Array of tests to do
 tests = ["OCR", "RFID", "Servo", "CV test"]
@@ -31,6 +34,9 @@ def selectTest():
 # OCR test function
 def OCRTest():
     print("Started OCR test")
+    img = getCameraFrame()
+    imgarr = np.array(img)
+    text = pytesseract.image_to_string(imgarr)
 
 # RFID test function
 def RFIDTest():
