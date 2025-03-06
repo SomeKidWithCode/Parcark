@@ -54,6 +54,7 @@ def OCRTest():
     img = getCameraFrame()
     imgarr = np.array(img)
     text = pytesseract.image_to_string(imgarr)
+    print("Gotten text", text)
 
 # RFID test function
 def RFIDTest():
