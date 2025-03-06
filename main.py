@@ -5,6 +5,12 @@ from PIL import Image
 import numpy as np
 import pytesseract
 
+# Attempting to use the webcam to get the image to process
+camera = cv.VideoCapture(0)
+if not camera.isOpened():
+    print("Error: Could not open camera.")
+    exit()
+
 # Frame getter
 def getCameraFrame():
     ret, frame = camera.read()
@@ -61,12 +67,6 @@ selectTest()
 
 
 # ----- Stuff ----- #
-
-# Attempting to use the webcam to get the image to process
-camera = cv.VideoCapture(0)
-if not camera.isOpened():
-    print("Error: Could not open camera.")
-    exit()
 
 # Pretrained classes in the model - Dictionary
 classNames = {0: 'background',
