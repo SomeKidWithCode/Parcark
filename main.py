@@ -5,6 +5,13 @@ from PIL import Image
 import numpy as np
 import pytesseract
 
+# Frame getter
+def getCameraFrame():
+    ret, frame = camera.read()
+    if ret:
+        image = cv.resize(frame, (320, 240))
+        return image
+
 # Array of tests to do
 tests = ["OCR", "RFID", "Servo", "CV test"]
 
@@ -51,13 +58,6 @@ def ServoTest():
     print("Started servo test")
 
 selectTest()
-
-# 
-def getCameraFrame():
-    ret, frame = camera.read()
-    if ret:
-        image = cv.resize(frame, (320, 240))
-        return image
 
 
 # ----- Stuff ----- #
