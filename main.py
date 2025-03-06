@@ -1,9 +1,19 @@
 # Imports
 import cv2 as cv
-import os, sys, inspect
-from PIL import Image
 import numpy as np
-import pytesseract
+
+from time import sleep
+from PIL import Image
+from gpiozero import AngularServo
+
+import os, sys, inspect, pytesseract
+
+
+# For non-extern: sudo apt-get install python3-gpiozero
+# OR
+# For virtual environment: pip install gpiozero
+# Create servo object
+servo = AngularServo(18, min_pulse_width = 0.0005, max_pulse_width = 0.0025)
 
 # Attempting to use the webcam to get the image to process
 camera = cv.VideoCapture(0)
@@ -30,9 +40,7 @@ def selectTest():
     selectedTestNum = int(input())
 
     try:
-
         selectedTest = tests[selectedTestNum]
-        #testIndex = tests.index(selectedTest)
         print("Selected", selectedTest)
 
         if selectedTest == "OCR":
@@ -53,7 +61,6 @@ def OCRTest():
     print("Started OCR test")
     img = getCameraFrame()
     imgarr = np.array(img)
-    print(imgarr)
     text = pytesseract.image_to_string(imgarr)
     print("Gotten text", text)
 
@@ -64,6 +71,11 @@ def RFIDTest():
 # Servo test function
 def ServoTest():
     print("Started servo test")
+    servo.angle = 0    # Move to 0 degrees
+    sleep(2)
+    servo.angle = 90   # Move to 90 degrees
+    sleep(2)
+    servo.angle = 180  # Move to 180 degrees
 
 selectTest()
 
@@ -71,23 +83,25 @@ selectTest()
 # ----- Stuff ----- #
 
 # Pretrained classes in the model - Dictionary
-classNames = {0: 'background',
-              1: 'person', 2: 'bicycle', 3: 'car', 4: 'motorcycle', 5: 'airplane', 6: 'bus',
-              7: 'train', 8: 'truck', 9: 'boat', 10: 'traffic light', 11: 'fire hydrant',
-              13: 'stop sign', 14: 'parking meter', 15: 'bench', 16: 'bird', 17: 'cat',
-              18: 'dog', 19: 'horse', 20: 'sheep', 21: 'cow', 22: 'elephant', 23: 'bear',
-              24: 'zebra', 25: 'giraffe', 27: 'backpack', 28: 'umbrella', 31: 'handbag',
-              32: 'tie', 33: 'suitcase', 34: 'frisbee', 35: 'skis', 36: 'snowboard',
-              37: 'sports ball', 38: 'kite', 39: 'baseball bat', 40: 'baseball glove',
-              41: 'skateboard', 42: 'surfboard', 43: 'tennis racket', 44: 'bottle',
-              46: 'wine glass', 47: 'cup', 48: 'fork', 49: 'knife', 50: 'spoon',
-              51: 'bowl', 52: 'banana', 53: 'apple', 54: 'sandwich', 55: 'orange',
-              56: 'broccoli', 57: 'carrot', 58: 'hot dog', 59: 'pizza', 60: 'donut',
-              61: 'cake', 62: 'chair', 63: 'couch', 64: 'potted plant', 65: 'bed',
-              67: 'dining table', 70: 'toilet', 72: 'tv', 73: 'laptop', 74: 'mouse',
-              75: 'remote', 76: 'keyboard', 77: 'cell phone', 78: 'microwave', 79: 'oven',
-              80: 'toaster', 81: 'sink', 82: 'refrigerator', 84: 'book', 85: 'clock',
-              86: 'vase', 87: 'scissors', 88: 'teddy bear', 89: 'hair drier', 90: 'toothbrush'}
+classNames = {
+    0: 'background',
+    1: 'person', 2: 'bicycle', 3: 'car', 4: 'motorcycle', 5: 'airplane', 6: 'bus',
+    7: 'train', 8: 'truck', 9: 'boat', 10: 'traffic light', 11: 'fire hydrant',
+    13: 'stop sign', 14: 'parking meter', 15: 'bench', 16: 'bird', 17: 'cat',
+    18: 'dog', 19: 'horse', 20: 'sheep', 21: 'cow', 22: 'elephant', 23: 'bear',
+    24: 'zebra', 25: 'giraffe', 27: 'backpack', 28: 'umbrella', 31: 'handbag',
+    32: 'tie', 33: 'suitcase', 34: 'frisbee', 35: 'skis', 36: 'snowboard',
+    37: 'sports ball', 38: 'kite', 39: 'baseball bat', 40: 'baseball glove',
+    41: 'skateboard', 42: 'surfboard', 43: 'tennis racket', 44: 'bottle',
+    46: 'wine glass', 47: 'cup', 48: 'fork', 49: 'knife', 50: 'spoon',
+    51: 'bowl', 52: 'banana', 53: 'apple', 54: 'sandwich', 55: 'orange',
+    56: 'broccoli', 57: 'carrot', 58: 'hot dog', 59: 'pizza', 60: 'donut',
+    61: 'cake', 62: 'chair', 63: 'couch', 64: 'potted plant', 65: 'bed',
+    67: 'dining table', 70: 'toilet', 72: 'tv', 73: 'laptop', 74: 'mouse',
+    75: 'remote', 76: 'keyboard', 77: 'cell phone', 78: 'microwave', 79: 'oven',
+    80: 'toaster', 81: 'sink', 82: 'refrigerator', 84: 'book', 85: 'clock',
+    86: 'vase', 87: 'scissors', 88: 'teddy bear', 89: 'hair drier', 90: 'toothbrush'
+}
 
 # Function to return name from the dictionary
 def id_class_name(class_id, classes):
@@ -99,7 +113,7 @@ def id_class_name(class_id, classes):
 def execution_path(filename):
   return os.path.join(os.path.dirname(inspect.getfile(sys._getframe(1))), filename)			
 
-  # Loading model
+# Loading model
 model = cv.dnn.readNetFromTensorflow(execution_path('../OpenCV/models/frozen_inference_graph.pb'), execution_path('../OpenCV/models/ssd_mobilenet_v2_coco_2018_03_29.pbtxt'))
 
 def objectDetector():
@@ -110,7 +124,7 @@ def objectDetector():
 
         # Sets our input as the image, turns it into a blob
         # Resizes and sets the colour mode to BGR
-        model.setInput(cv.dnn.blobFromImage(image, size=(300, 300), swapRB=True))
+        model.setInput(cv.dnn.blobFromImage(image, size = (300, 300), swapRB = True))
 
         # Returns a blob array
         output = model.forward()
@@ -119,18 +133,18 @@ def objectDetector():
             confidence = detection[2]
             if confidence > .5: # This is our confidence threshold
                 class_id = detection[1] # This is the ID of what it thinks it is
-                class_name=id_class_name(class_id,classNames) # Returning the name from Dictionary
-                print(str(str(class_id) + " " + str(detection[2])  + " " + class_name))
+                class_name = id_class_name(class_id,classNames) # Returning the name from Dictionary
+                print(str(str(class_id) + " " + str(detection[2]) + " " + class_name))
                 
                 # Draw the bounding box, scaled to size of the image
                 box_x = detection[3] * image_width
                 box_y = detection[4] * image_height
                 box_width = detection[5] * image_width
                 box_height = detection[6] * image_height
-                cv.rectangle(image, (int(box_x), int(box_y)), (int(box_width), int(box_height)), (23, 230, 210), thickness=1)
+                cv.rectangle(image, (int(box_x), int(box_y)), (int(box_width), int(box_height)), (23, 230, 210), thickness = 1)
                 
                 # Put some text on the bounding box
-                cv.putText(image,class_name ,(int(box_x), int(box_y+.05*image_height)),cv.FONT_HERSHEY_SIMPLEX,(.005*image_width),(0, 0, 255))
+                cv.putText(image, class_name, (int(box_x), int(box_y + .05 * image_height)), cv.FONT_HERSHEY_SIMPLEX, (.005 * image_width), (0, 0, 255))
 
         cv.imshow('image', image)
 
