@@ -29,7 +29,8 @@ def selectTest():
             ServoTest()
         elif selectedTest == "CV test":
             objectDetector()
-    except:
+    except Exception as e:
+        print(f"An exception occured: {e}")
         print("That is not an option")
         selectTest()
 
