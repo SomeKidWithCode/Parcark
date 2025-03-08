@@ -1,4 +1,6 @@
 # Imports
+from asyncio.windows_events import NULL
+import stat
 import cv2 as cv
 import numpy as np
 
@@ -158,12 +160,17 @@ def objectDetector():
 # ---------- License Plate Database System ---------- #
 
 class LPDatabase:
-    @staticmethod
-    def writeToDB():
-        pass
-    
-    def readFromDB():
-        pass
+    lpDict = {}
 
-    def DBContains():
-        pass
+    # We only need one method for the system as the presence of a specific license plate is atomic
+    # This means that if a li
+    @staticmethod
+    def synchronize(licensePlate, time = None):
+        # This may look a little convoluted so I'll explain
+
+        if time is None:
+            if licensePlate in LPDatabase.lpDict:
+                return LPDatabase.lpDict[licensePlate]
+        else
+            
+
