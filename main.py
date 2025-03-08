@@ -152,3 +152,18 @@ def objectDetector():
 
         if key == 27: # exit on ESC
             break
+
+# ---------- RFID Payment System ---------- #
+
+# ---------- License Plate Database System ---------- #
+
+class LPDatabase:
+    @staticmethod
+    def writeToDB():
+        pass
+    
+    def readFromDB():
+        pass
+
+    def DBContains():
+        pass
