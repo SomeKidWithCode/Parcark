@@ -203,8 +203,6 @@ def objectDetector():
 class LPDatabase:
     lpDict = {}
 
-    # We only need one method for the system as the presence of a specific license plate is atomic
-    # This means that if a li
     @staticmethod
     def synchronize(licensePlate, time = None):
         # This may look a little convoluted so I'll explain
