@@ -31,6 +31,7 @@ if not camera.isOpened():
 # Frame getter
 def getCameraFrame():
     ret, frame = camera.read()
+    # This should probably have a condition for if the frame fetch fails
     if ret:
         image = cv.resize(frame, (320, 240))
         return image
@@ -246,7 +247,7 @@ def closeBoomGate():
     pass
 
 
-# Yes
+# Yes. From here: https://stackoverflow.com/questions/14700073/24-hour-format-for-python-timestamp
 def getTime():
     return time.strftime("%H:%M:%S")
 
