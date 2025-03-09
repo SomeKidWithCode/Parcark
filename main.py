@@ -4,7 +4,8 @@ Once I figure out what is and isn't nesssesary, then I can start cleaning it up
 But for now, all of this has to stay as is
 '''
 
-# Imports
+# ----- Imports ----- #
+
 import cv2 as cv
 import numpy as np
 
@@ -12,7 +13,7 @@ from time import sleep
 from PIL import Image
 from gpiozero import AngularServo
 
-import os, sys, inspect, pytesseract
+import os, sys, inspect, pytesseract, time
 
 
 # For non-extern: sudo apt-get install python3-gpiozero
@@ -35,7 +36,7 @@ def getCameraFrame():
         return image
 
 # Array of tests to do
-tests = ["OCR", "RFID", "Servo", "CV test"]
+tests = ["OCR", "RFID", "Servo", "CV test", "DB test"]
 
 # A loop to select a test
 def selectTest():
@@ -58,6 +59,10 @@ def selectTest():
             ServoTest()
         elif selectedTest == "CV test":
             objectDetector()
+        elif selectedTest == "DB Test":
+            DBTest()
+
+        print("Finshed/exited testing")
     # ValueError means that 'int(input())' failed because the provided value was not a number
     except ValueError:
         print(f"{selectedTestNum} is not a number")
@@ -77,7 +82,7 @@ def OCRTest():
     img = getCameraFrame()
     imgarr = np.array(img)
     text = pytesseract.image_to_string(imgarr)
-    print("Gotten text", text)
+    print(f"Gotten text <{text}>")
 
 # RFID test function
 def RFIDTest():
@@ -92,7 +97,27 @@ def ServoTest():
     sleep(2)
     servo.angle = 180  # Move to 180 degrees
 
-selectTest()
+def DBTest():
+    lp1 = "Hippity hoppity, your soul is now my property"
+    lp2 = "nuh uh. WHAT DO YOU MEAN NUH UH?"
+
+    # Test 2,2
+    LPDatabase.synchronize(lp1, getTime())
+
+    # Test 2,1
+    try:
+        LPDatabase.synchronize(lp1, getTime())
+    except Exception as e:
+        print(f"Received exception: {e}")
+
+    # Test 1,1
+    v = LPDatabase.synchronize(lp1)
+    print(v);
+
+    # Test 1,2
+    LPDatabase.synchronize(lp2)
+
+
 
 
 # ----- Stuff ----- #
@@ -185,7 +210,7 @@ class LPDatabase:
 
         # If time is None, that means we are looking for a LP
         # Then if the license plate exists in the directory, we get the value, store it, delete the entry and return it
-        # If the LP entry doesn"t exist, raise an exception
+        # If the LP entry doesn't exist, raise an exception
 
         # If time isn't none, then we are adding an entry
         # If the LP already exists in the system, then we have a duplicate-entry issue
@@ -219,3 +244,21 @@ def openBoomGate():
 
 def closeBoomGate():
     pass
+
+
+# Yes
+def getTime():
+    return time.strftime("%H:%M:%S")
+
+
+
+
+
+
+
+
+
+
+
+# Banish this to the Shadow Realm so everything works properly
+selectTest()
