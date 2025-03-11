@@ -13,7 +13,7 @@ from time import sleep
 from PIL import Image
 from gpiozero import AngularServo
 
-import os, sys, inspect, pytesseract, time
+import os, sys, inspect, pytesseract, time # type: ignore
 
 
 # For non-extern: sudo apt-get install python3-gpiozero
@@ -113,7 +113,7 @@ def DBTest():
 
     # Test 1,1
     v = LPDatabase.synchronize(lp1)
-    print(v);
+    print(v)
 
     # Test 1,2
     LPDatabase.synchronize(lp2)
@@ -155,9 +155,7 @@ def execution_path(filename):
   return os.path.join(os.path.dirname(inspect.getfile(sys._getframe(1))), filename)			
 
 # Loading model
-#model = cv.dnn.readNetFromTensorflow(execution_path("../OpenCV/models/frozen_inference_graph.pb"), execution_path("../OpenCV/models/ssd_mobilenet_v2_coco_2018_03_29.pbtxt"))
-# I would imagine that the ../ thing works anyway
-model = cv.dnn.readNetFromTensorflow("../OpenCV/models/frozen_inference_graph.pb", "../OpenCV/models/ssd_mobilenet_v2_coco_2018_03_29.pbtxt")
+model = cv.dnn.readNetFromTensorflow(execution_path("../OpenCV/models/frozen_inference_graph.pb"), execution_path("../OpenCV/models/ssd_mobilenet_v2_coco_2018_03_29.pbtxt"))
 
 def objectDetector():
     while True:
