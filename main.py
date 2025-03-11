@@ -105,19 +105,23 @@ def DBTest():
 
     # Test 2,2
     LPDatabase.synchronize(lp1, getTime())
+    print("Done 2,2 test")
 
     # Test 2,1
     try:
         LPDatabase.synchronize(lp1, getTime())
     except Exception as e:
         print(f"Received exception: {e}")
+    print("Done 2,1 test")
 
     # Test 1,1
     v = LPDatabase.synchronize(lp1)
     print(v)
+    print("Done 1,1 test")
 
     # Test 1,2
     LPDatabase.synchronize(lp2)
+    print("Done 1,2, test")
 
 
 
