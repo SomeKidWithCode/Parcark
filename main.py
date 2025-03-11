@@ -13,9 +13,8 @@ import numpy as np
 from time import sleep
 from PIL import Image
 from gpiozero import AngularServo
-from openalpr import Alpr
 
-import os, sys, inspect, pytesseract, time, json # type: ignore
+import os, sys, inspect, pytesseract, time # type: ignore
 
 
 
@@ -81,15 +80,16 @@ def OCRTest():
     print("Started OCR test")
 
     while True:
+        # Get cam frame and show it
         img = getCameraFrame()
         cv.imshow("img", img)
 
-
-
-        alpr = Alpr("us", "/etc/openalpr/openalpr.conf", "/usr/share/openalpr/runtimedata")
-        results = alpr.recognizefile(img)
-        print(json.dumps(results, indent = 4))
-        alpr.unload()
+        # Modify frame for better reading
+        img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+        #imgarr = np.array(img)
+        # Convert frame to text
+        text = pytesseract.image_to_string(img)
+        print(f"Gotten text <{text}>")
 
         key = cv.waitKey(1)
 
@@ -118,28 +118,30 @@ def DBTest():
     lp1 = "Hippity hoppity, your soul is now my property"
     lp2 = "nuh uh. WHAT DO YOU MEAN NUH UH?"
 
-    # Test 2,2
-    LPDatabase.synchronize(lp1, getTime())
-    print("Done 2,2 test")
+    # Push normal test
+    LPDatabase.push(lp1)
+    print("Did push normal test")
 
-    # Test 2,1
+    # Push error test
     try:
-        LPDatabase.synchronize(lp1, getTime())
+        LPDatabase.push(lp1)
     except Exception as e:
         print(f"Received exception: {e}")
-    print("Done 2,1 test")
+    print("Did push error test")
 
-    # Test 1,1
-    v = LPDatabase.synchronize(lp1)
-    print(v)
-    print("Done 1,1 test")
+    # Pull normal test
+    val = LPDatabase.pull(lp1)
+    print(val)
+    print(f"Did pull normal test: {val}")
 
-    # Test 1,2
+    # Pull error test
     try:
-        LPDatabase.synchronize(lp2)
+        val = LPDatabase.pull(lp2)
     except Exception as e:
         print(f"Received exception: {e}")
-    print("Done 1,2 test")
+    print(val)
+    print("Did pull error test")
+
 
 
 
@@ -220,10 +222,8 @@ def objectDetector():
 
 # ---------- RFID Payment System ---------- #
 
-class RFIDTransactor:
-    @staticmethod
-    def charge():
-        pass
+def chargeUserMoney():
+    pass
 
 # ---------- License Plate Database System ---------- #
 
@@ -231,39 +231,21 @@ class LPDatabase:
     lpDict = {}
 
     @staticmethod
-    def synchronize(licensePlate, time = None):
-        # This may look a little convoluted so I'll explain
-
-        # If time is None, that means we are looking for a LP
-        # Then if the license plate exists in the directory, we get the value, store it, delete the entry and return it
-        # If the LP entry doesn't exist, raise an exception
-
-        # If time isn't none, then we are adding an entry
-        # If the LP already exists in the system, then we have a duplicate-entry issue
-        # Else, we just add the value
-
-        # I am aware that this could have user-related issues but that isn't a problem at this time
-
-        if time is None:
-            if licensePlate in LPDatabase.lpDict:
-                val = LPDatabase.lpDict[licensePlate]
-                LPDatabase.lpDict.pop(licensePlate)
-                return val
-            else:
-                raise Exception("Unable to fetch time from non-existent entry")
+    def pull(licensePlate):
+        if licensePlate in LPDatabase.lpDict:
+            val = LPDatabase.lpDict[licensePlate]
+            LPDatabase.lpDict.pop(licensePlate)
+            return val
         else:
-            if licensePlate in LPDatabase.lpDict:
-                raise Exception("A duplicate license plate entry cannot exist")
-            else:
-                LPDatabase.lpDict[licensePlate] = time
+            raise Exception("Unable to fetch time from non-existent entry")
+
 
     @staticmethod
-    def pull():
-        pass
-
-    @staticmethod
-    def push():
-        pass
+    def push(licensePlate):
+        if licensePlate in LPDatabase.lpDict:
+            raise Exception("A duplicate license plate entry cannot exist")
+        else:
+            LPDatabase.lpDict[licensePlate] = time.strftime("%H:%M:%S") # Yes. From here: https://stackoverflow.com/questions/14700073/24-hour-format-for-python-timestamp
 
     @staticmethod
     def printDB():
@@ -278,10 +260,6 @@ def openBoomGate():
 def closeBoomGate():
     pass
 
-
-# Yes. From here: https://stackoverflow.com/questions/14700073/24-hour-format-for-python-timestamp
-def getTime():
-    return time.strftime("%H:%M:%S")
 
 
 
