@@ -76,12 +76,19 @@ def selectTest():
 # OCR test function
 def OCRTest():
     print("Started OCR test")
-    img = getCameraFrame()
-    cv.imshow("img", img)
 
-    imgarr = np.array(img)
-    text = pytesseract.image_to_string(imgarr)
-    print(f"Gotten text <{text}>")
+    while True:
+        img = getCameraFrame()
+        cv.imshow("img", img)
+
+        imgarr = np.array(img)
+        text = pytesseract.image_to_string(imgarr)
+        print(f"Gotten text <{text}>")
+
+        key = cv.waitKey(1)
+
+        if key == 27:
+            break
 
 # RFID test function
 def RFIDTest():
@@ -123,7 +130,7 @@ def DBTest():
     try:
         LPDatabase.synchronize(lp2)
     except Exception as e:
-        print(e)
+        print(f"Received exception: {e}")
     print("Done 1,2 test")
 
 
