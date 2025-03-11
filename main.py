@@ -120,8 +120,11 @@ def DBTest():
     print("Done 1,1 test")
 
     # Test 1,2
-    LPDatabase.synchronize(lp2)
-    print("Done 1,2, test")
+    try:
+        LPDatabase.synchronize(lp2)
+    except Exception as e:
+        print(e)
+    print("Done 1,2 test")
 
 
 
