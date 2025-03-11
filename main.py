@@ -16,9 +16,6 @@ from gpiozero import AngularServo
 import os, sys, inspect, pytesseract, time # type: ignore
 
 
-# For non-extern: sudo apt-get install python3-gpiozero
-# OR
-# For virtual environment: pip install gpiozero
 # Create servo object
 servo = AngularServo(18, min_pulse_width = 0.0005, max_pulse_width = 0.0025)
 
@@ -76,11 +73,12 @@ def selectTest():
     except Exception as e:
         print(f"An exception occured: {e}")
         
-
 # OCR test function
 def OCRTest():
     print("Started OCR test")
     img = getCameraFrame()
+    cv.imshow("img", img)
+
     imgarr = np.array(img)
     text = pytesseract.image_to_string(imgarr)
     print(f"Gotten text <{text}>")
@@ -98,7 +96,10 @@ def ServoTest():
     sleep(2)
     servo.angle = 180  # Move to 180 degrees
 
+# Database test function
 def DBTest():
+    print("Started database test")
+
     lp1 = "Hippity hoppity, your soul is now my property"
     lp2 = "nuh uh. WHAT DO YOU MEAN NUH UH?"
 
@@ -157,6 +158,7 @@ def execution_path(filename):
 # Loading model
 model = cv.dnn.readNetFromTensorflow(execution_path("../OpenCV/models/frozen_inference_graph.pb"), execution_path("../OpenCV/models/ssd_mobilenet_v2_coco_2018_03_29.pbtxt"))
 
+# Object detector function
 def objectDetector():
     while True:
         image = getCameraFrame()
@@ -233,7 +235,6 @@ class LPDatabase:
         for key in LPDatabase.lpDict:
             print(key, LPDatabase.lpDict[key])
 
-
 # ----- Quick functions for opening and closing the boomgate ----- #
 
 def openBoomGate():
@@ -246,10 +247,6 @@ def closeBoomGate():
 # Yes. From here: https://stackoverflow.com/questions/14700073/24-hour-format-for-python-timestamp
 def getTime():
     return time.strftime("%H:%M:%S")
-
-
-
-
 
 
 
