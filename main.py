@@ -57,7 +57,7 @@ def selectTest():
             ServoTest()
         elif selectedTest == "CV test":
             objectDetector()
-        elif selectedTest == "DB Test":
+        elif selectedTest == "DB test":
             DBTest()
 
         print("Finshed/exited testing")
