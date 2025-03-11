@@ -12,8 +12,10 @@ import numpy as np
 from time import sleep
 from PIL import Image
 from gpiozero import AngularServo
+from openalpr import Alpr
 
-import os, sys, inspect, pytesseract, time # type: ignore
+import os, sys, inspect, pytesseract, time, json # type: ignore
+
 
 
 # Create servo object
@@ -81,14 +83,19 @@ def OCRTest():
         img = getCameraFrame()
         cv.imshow("img", img)
 
-        imgarr = np.array(img)
-        text = pytesseract.image_to_string(imgarr)
-        print(f"Gotten text <{text}>")
+
+
+        alpr = Alpr("us", "/etc/openalpr/openalpr.conf", "/usr/share/openalpr/runtimedata")
+        results = alpr.recognizefile(img)
+        print(json.dumps(results, indent = 4))
+        alpr.unload()
 
         key = cv.waitKey(1)
 
         if key == 27:
             break
+
+        sleep(1)
 
 # RFID test function
 def RFIDTest():
