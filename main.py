@@ -6,6 +6,7 @@ But for now, all of this has to stay as is
 
 # ----- Imports ----- #
 
+import stat
 import cv2 as cv
 import numpy as np
 
@@ -219,6 +220,11 @@ def objectDetector():
 
 # ---------- RFID Payment System ---------- #
 
+class RFIDTransactor:
+    @staticmethod
+    def charge():
+        pass
+
 # ---------- License Plate Database System ---------- #
 
 class LPDatabase:
@@ -250,6 +256,14 @@ class LPDatabase:
                 raise Exception("A duplicate license plate entry cannot exist")
             else:
                 LPDatabase.lpDict[licensePlate] = time
+
+    @staticmethod
+    def pull():
+        pass
+
+    @staticmethod
+    def push():
+        pass
 
     @staticmethod
     def printDB():
