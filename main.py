@@ -155,12 +155,13 @@ def RFIDTest():
     
 # Servo test function
 def ServoTest():
-    print("Started servo test")
-    servo.angle = 0    # Move to 0 degrees
-    sleep(2)
-    servo.angle = 90   # Move to 90 degrees
-    sleep(2)
-    servo.angle = 180  # Move to 180 degrees
+    while True:
+        print("Started servo test")
+        servo.angle = 0    # Move to 0 degrees
+        sleep(2)
+        servo.angle = 90   # Move to 90 degrees
+        sleep(2)
+        servo.angle = 180  # Move to 180 degrees
 
 # Database test function
 def DBTest():
