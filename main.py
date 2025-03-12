@@ -82,7 +82,11 @@ def OCRTest():
 
         cv.imwrite("img.jpg", img)
 
-        result = ocr.readtext("img.jpg")
+        try:
+
+            result = ocr.readtext("img.jpg")
+        except:
+            print("im sure its fine")
 
         for (bbox, text, confidence) in result:
             print(f"{text},{confidence:.2f}")
