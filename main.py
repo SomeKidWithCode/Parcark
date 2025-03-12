@@ -9,7 +9,7 @@ from PIL import Image
 from gpiozero import AngularServo
 from pirc522 import RFID
 from mfrc522 import SimpleMFRC522
-#import easyocr
+import easyocr
 
 import os, sys, inspect, pytesseract, time, signal, keyboard # type: ignore
 
@@ -22,7 +22,7 @@ servo = AngularServo(18, min_pulse_width = 0.0005, max_pulse_width = 0.0025)
 rfid = SimpleMFRC522()
 
 # Create OCR object
-#ocr = easyocr.Reader(["en"])
+ocr = easyocr.Reader(["en"])
 
 # Create camera object
 camera = cv.VideoCapture(0)
@@ -80,12 +80,15 @@ def OCRTest():
         # Get cam frame and show it
         img = getCameraFrame()
 
-        #cv.imgsave()
+        cv.imsave(img, "img.jpg")
 
-        #text = ocr.readtext("")
+        result = ocr.readtext("img.jpg")
+
+        for (bbox, text, confidence) in result:
+            print(f"{text},{confidence:.2f}")
 
         # Modify frame for better reading
-        img = np.array(img)
+        '''img = np.array(img)
 
         img_empty = np.zeros((img.shape[0], img.shape[1]))
         
@@ -95,16 +98,16 @@ def OCRTest():
         
         img4 = cv.GaussianBlur(img3, (1, 1), 0)
 
-        cv.imgshow("E", img4)
+        cv.imshow("E", img4)
         
         text = pytesseract.image_to_string(img4)
-        print(f"Gotten text <{text}>")
+        print(f"Gotten text <{text}>")'''
         
 
         if exitOnEsc():
             break
 
-        sleep(1)
+        sleep(2)
 
 # RFID test function
 def RFIDTest():
