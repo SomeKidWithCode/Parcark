@@ -1,6 +1,6 @@
 # ---------- Imports ---------- #
 
-import cv as cv
+import cv2 as cv
 import numpy as np
 import RPi.GPIO as GPIO
 
@@ -110,59 +110,11 @@ def OCRTest():
 def RFIDTest():
     print("Started RFID test")
 
-    '''
-    while continueReadingRFID:
-        rfid.wait_for_tag()
-        (error, tag_type) = rfid.request()
-        if not error:
-            (error, uid) = rfid.anticoll()
-            if not error:
-                print("Card detected with UID:", uid)
-            
-                # Select the scanned tag
-                rfid.select_tag(uid)
-            
-                # Define the default key for MIFARE Classic cards
-                default_key = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
-            
-                # Choose a block number to work with (avoid sector trailer blocks)
-                block_num = 8
-            
-                # Authenticate the block
-                error = rfid.auth(rfid.auth_a, block_num, default_key, uid)
-                if error:
-                    print("Authentication error on block", block_num)
-                else:
-                    # Read data from the block
-                    data = rfid.read(block_num)
-                    print("Data on block", block_num, ":", data)
-                
-                    # Prepare data to write: must be exactly 16 bytes.
-                    # Here we write "Hello, RFID!" and pad with spaces.
-                    write_str = "Hello, RFID!"
-                    write_data = list(bytearray(write_str.ljust(16), 'utf-8'))
-                
-                    # Write data to the block
-                    error = rfid.write(block_num, write_data)
-                    if error:
-                        print("Error writing to block", block_num)
-                    else:
-                        print("Data written successfully!")
-                
-                    # Stop crypto on the card to finalize the operation
-                    rfid.stop_crypto1()
-            
-                # Pause briefly to avoid processing the same card multiple times
-                time.sleep(1)
-        if exitOnEsc():
-            break
-    '''
     try:
         while True:
             print("Hold tag near reader")
             tag_id, text = rfid.read()
             print(f"ID: {tag_id}\nData: {text}")
-            #GPIO.cleanup()
             rfid.write("E")
     except KeyboardInterrupt:
         GPIO.cleanup()
