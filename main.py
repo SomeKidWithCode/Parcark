@@ -11,6 +11,7 @@ from time import sleep
 from PIL import Image
 from gpiozero import AngularServo
 from pirc522 import RFID
+from mfrc522 import SimpleMFRC522
 
 import os, sys, inspect, pytesseract, time, signal, keyboard # type: ignore
 
