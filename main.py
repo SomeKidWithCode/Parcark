@@ -78,6 +78,7 @@ def OCRTest():
 
         # Modify frame for better reading
         img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+        img = cv.threshold(img, 0, 255, cv.THRESH_BINARY | cv.THRESH_OTSU)[1]
 
         cv.imshow("img", img)
 
@@ -155,8 +156,8 @@ def RFIDTest():
     
 # Servo test function
 def ServoTest():
+    print("Started servo test")
     while True:
-        print("Started servo test")
         servo.angle = 0    # Move to 0 degrees
         sleep(2)
         servo.angle = 90   # Move to 90 degrees
@@ -295,6 +296,7 @@ def cleanUpAndExit():
     camera.release()
     cv.destroyAllWindows()
     rfid.cleanup()
+    GPIO.cleanup()
     exit()
 
 # Fn for exiting on Escape key
