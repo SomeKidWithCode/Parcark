@@ -5,6 +5,7 @@
 
 import cv2 as cv
 import numpy as np
+import RPi.GPIO as GPIO
 
 from time import sleep
 from PIL import Image
@@ -19,7 +20,7 @@ import os, sys, inspect, pytesseract, time, signal, keyboard # type: ignore
 servo = AngularServo(18, min_pulse_width = 0.0005, max_pulse_width = 0.0025)
 
 # Create rfid object
-rfid = RFID()
+rfid = SimpleMFRC522()
 
 # Create camera object
 camera = cv.VideoCapture(0)
@@ -94,6 +95,7 @@ def OCRTest():
 def RFIDTest():
     print("Started RFID test")
 
+    '''
     while continueReadingRFID:
         rfid.wait_for_tag()
         (error, tag_type) = rfid.request()
@@ -139,6 +141,16 @@ def RFIDTest():
                 time.sleep(1)
         if exitOnEsc():
             break
+    '''
+    try:
+        while True:
+            print("Hold tag near reader")
+            tag_id, text = rfid.read()
+            print(f"ID: {tag_id}\nData: {text}")
+            GPIO.cleanup()
+    except KeyboardInterrupt:
+        GPIO.cleanup()
+
     
 # Servo test function
 def ServoTest():
