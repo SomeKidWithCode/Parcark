@@ -1,6 +1,3 @@
-# Install the following: pip install spidev RPi.GPIO pi-rc522 keyboard
-
-
 # ---------- Imports ---------- #
 
 import cv2 as cv
@@ -78,10 +75,12 @@ def OCRTest():
     while True:
         # Get cam frame and show it
         img = getCameraFrame()
-        cv.imshow("img", img)
 
         # Modify frame for better reading
         img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+
+        cv.imshow("img", img)
+
         #imgarr = np.array(img)
         # Convert frame to text
         text = pytesseract.image_to_string(img)
@@ -148,7 +147,8 @@ def RFIDTest():
             print("Hold tag near reader")
             tag_id, text = rfid.read()
             print(f"ID: {tag_id}\nData: {text}")
-            GPIO.cleanup()
+            #GPIO.cleanup()
+            rfid.write("E")
     except KeyboardInterrupt:
         GPIO.cleanup()
 
