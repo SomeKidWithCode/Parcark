@@ -161,7 +161,7 @@ def ServoTest():
         sleep(2)
         servo.angle = 90   # Move to 90 degrees
         sleep(2)
-        servo.angle = 180  # Move to 180 degrees
+        servo.angle = -90  # Move to 180 degrees
 
 # Database test function
 def DBTest():
