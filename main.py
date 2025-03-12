@@ -80,7 +80,7 @@ def OCRTest():
         # Get cam frame and show it
         img = getCameraFrame()
 
-        cv.imsave(img, "img.jpg")
+        cv.imwrite("img.jpg", img)
 
         result = ocr.readtext("img.jpg")
 
