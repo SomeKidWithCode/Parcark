@@ -22,7 +22,7 @@ servo = AngularServo(18, min_pulse_width = 0.0005, max_pulse_width = 0.0025)
 rfid = SimpleMFRC522()
 
 # Create OCR object
-ocr = easyocr.Reader(["en"])
+#ocr = easyocr.Reader(["en"])
 
 # Create camera object
 camera = cv.VideoCapture(0)
