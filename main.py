@@ -80,19 +80,18 @@ def OCRTest():
         # Get cam frame and show it
         img = getCameraFrame()
 
-        cv.imwrite("img.jpg", img)
+        '''cv.imwrite("img.jpg", img)
 
         try:
-
             result = ocr.readtext("img.jpg")
         except:
             print("im sure its fine")
 
         for (bbox, text, confidence) in result:
-            print(f"{text},{confidence:.2f}")
+            print(f"{text},{confidence:.2f}")'''
 
         # Modify frame for better reading
-        '''img = np.array(img)
+        img = np.array(img)
 
         img_empty = np.zeros((img.shape[0], img.shape[1]))
         
@@ -105,7 +104,7 @@ def OCRTest():
         cv.imshow("E", img4)
         
         text = pytesseract.image_to_string(img4)
-        print(f"Gotten text <{text}>")'''
+        print(f"Gotten text <{text}>")
         
 
         if exitOnEsc():
