@@ -88,6 +88,8 @@ def OCRTest():
         # Get array text
         text = pytesseract.image_to_string(img)'''
 
+        img = cv.resize(img, (320, 120))
+
         img = np.array(img)
 
         img_empty = np.zeros((img.shape[0], img.shape[1]))
