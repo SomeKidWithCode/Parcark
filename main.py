@@ -100,6 +100,8 @@ def OCRTest():
 
         img = cv.GaussianBlur(img, (1, 1), 0)
 
+        cv.imshow("e", img)
+
         text = pytesseract.image_to_string(img)
         print(f"Gotten text <{text}>")
 
