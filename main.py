@@ -5,11 +5,20 @@ import numpy as np
 import RPi.GPIO as GPIO
 
 from time import sleep
-from PIL import Image
 from gpiozero import AngularServo
 from mfrc522 import SimpleMFRC522
 
-import os, sys, inspect, pytesseract, time, signal, keyboard # type: ignore
+import pytesseract, time
+
+# ---------- Variables ---------- #
+
+continueReadingRFID = True
+
+# Intended constant for the escape key when using cv.waitKey
+ESC_KEY = 27
+
+# Intended constant for the amount of money charged when exiting
+CHARGE_RATE = 5
 
 # ---------- External Peripheral Creation ---------- #
 
@@ -28,7 +37,7 @@ if not camera.isOpened():
 # ---------- Testing Rig Code ---------- #
 
 # Array of tests to do
-tests = ["OCR", "RFID", "Servo", "CV test", "DB test"]
+tests = ["OCR", "RFID", "Servo", "DB test", "Mon hax"]
 
 # A loop to select a test
 def selectTest():
@@ -49,10 +58,10 @@ def selectTest():
             RFIDTest()
         elif selectedTest == "Servo":
             ServoTest()
-        elif selectedTest == "CV test":
-            objectDetector()
         elif selectedTest == "DB test":
             DBTest()
+        elif selectedTest == "Mon hax":
+            moneyHax()
 
         print("Finshed/exited testing")
     # ValueError means that 'int(input())' failed because the provided value was not a number
@@ -82,22 +91,21 @@ def OCRTest():
 
         img_empty = np.zeros((img.shape[0], img.shape[1]))
 
+        # Apply various image modifactions to make text reading easier
         img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-
         img = cv.normalize(img, img_empty, 0, 255, cv.NORM_MINMAX)
-
         img = cv.threshold(img, 100, 255, cv.THRESH_BINARY)[1]
-
         img = cv.GaussianBlur(img, (1, 1), 0)
 
-        cv.imshow("e", img)
+        # Show the modified image
+        cv.imshow("Camera Vision", img)
 
+        # Obtain the processed text
         text = pytesseract.image_to_string(img)
-        print(f"Gotten text <{text}>")
+        print(f"Text: <{text}>")
 
         if exitOnEsc():
             break
-
 
 # RFID test function
 def RFIDTest():
@@ -153,46 +161,31 @@ def DBTest():
     print(val)
     print("Did pull error test")
 
-# Object detector function
-def objectDetector():
-    while True:
-        image = getCameraFrame()
-
-        image_height, image_width, _ = image.shape
-
-        # Sets our input as the image, turns it into a blob
-        # Resizes and sets the colour mode to BGR
-        model.setInput(cv.dnn.blobFromImage(image, size = (300, 300), swapRB = True))
-
-        # Returns a blob array
-        output = model.forward()
-        
-        for detection in output[0, 0, :, :]:
-            confidence = detection[2]
-            if confidence > 0.5: # This is our confidence threshold
-                class_id = detection[1] # This is the ID of what it thinks it is
-                class_name = getIDClassName(class_id,classNames) # Returning the name from Dictionary
-                print(str(str(class_id) + " " + str(detection[2]) + " " + class_name))
-                
-                # Draw the bounding box, scaled to size of the image
-                box_x = detection[3] * image_width
-                box_y = detection[4] * image_height
-                box_width = detection[5] * image_width
-                box_height = detection[6] * image_height
-                cv.rectangle(image, (int(box_x), int(box_y)), (int(box_width), int(box_height)), (23, 230, 210), thickness = 1)
-                
-                # Put some text on the bounding box
-                cv.putText(image, class_name, (int(box_x), int(box_y + 0.05 * image_height)), cv.FONT_HERSHEY_SIMPLEX, (0.005 * image_width), (0, 0, 255))
-
-        cv.imshow("image", image)
-
-        if exitOnEsc():
-            break
-
 # ---------- RFID Payment System ---------- #
 
 def chargeUserMoney():
-    pass
+    print("Present credit card")
+    _, text = rfid.read()
+    storedMoney = int(text)
+    if storedMoney >= CHARGE_RATE:
+        storedMoney -= CHARGE_RATE
+    else:
+        print("*Credit card declines*")
+    rfid.write(storedMoney)
+
+# Debug function for writing money
+def moneyHax():
+    print("How much would you like to put on your card?")
+    try:
+        money = int(input())
+        print("Hold tag near reader")
+        rfid.write(money)
+        print(f"Set money to {money}")
+    except ValueError:
+        print(f"{money} is not a number")
+        moneyHax()
+    except Exception as e:
+        print(f"An exception occured: {e}")
 
 # ---------- License Plate Database System ---------- #
 
@@ -224,22 +217,12 @@ class LPDatabase:
 # ---------- Quick functions for opening and closing the boomgate ---------- #
 
 def openBoomGate():
-    pass
+    servo.angle = 90
 
 def closeBoomGate():
-    pass
+    servo.angle = 0
 
 # ---------- Util Functions ---------- #
-
-# Function to return name from the dictionary
-def getIDClassName(class_id, classes):
-    for key, value in classes.items():
-        if class_id == key:
-            return value
-
-# Find the execution path and join it with the direct reference
-def getExecutionPath(filename):
-    return os.path.join(os.path.dirname(inspect.getfile(sys._getframe(1))), filename)
 
 # Frame getter
 def getCameraFrame():
@@ -263,35 +246,13 @@ def exitOnEsc():
         return True
 
 
-# ---------- Object Recognisation Variables ---------- #
 
-# Loading model
-model = cv.dnn.readNetFromTensorflow(getExecutionPath("../OpenCV/models/frozen_inference_graph.pb"), getExecutionPath("../OpenCV/models/ssd_mobilenet_v2_coco_2018_03_29.pbtxt"))
 
-# Pretrained classes in the model
-classNames = {
-    0: "background", 1: "person", 2: "bicycle", 3: "car", 4: "motorcycle", 5: "airplane", 
-    6: "bus", 7: "train", 8: "truck", 9: "boat", 10: "traffic light", 11: "fire hydrant",
-    13: "stop sign", 14: "parking meter", 15: "bench", 16: "bird", 17: "cat", 18: "dog",
-    19: "horse", 20: "sheep", 21: "cow", 22: "elephant", 23: "bear", 24: "zebra",
-    25: "giraffe", 27: "backpack", 28: "umbrella", 31: "handbag", 32: "tie",
-    33: "suitcase", 34: "frisbee", 35: "skis", 36: "snowboard",
-    37: "sports ball", 38: "kite", 39: "baseball bat", 40: "baseball glove",
-    41: "skateboard", 42: "surfboard", 43: "tennis racket", 44: "bottle",
-    46: "wine glass", 47: "cup", 48: "fork", 49: "knife", 50: "spoon",
-    51: "bowl", 52: "banana", 53: "apple", 54: "sandwich", 55: "orange",
-    56: "broccoli", 57: "carrot", 58: "hot dog", 59: "pizza", 60: "donut",
-    61: "cake", 62: "chair", 63: "couch", 64: "potted plant", 65: "bed",
-    67: "dining table", 70: "toilet", 72: "tv", 73: "laptop", 74: "mouse",
-    75: "remote", 76: "keyboard", 77: "cell phone", 78: "microwave", 79: "oven",
-    80: "toaster", 81: "sink", 82: "refrigerator", 84: "book", 85: "clock",
-    86: "vase", 87: "scissors", 88: "teddy bear", 89: "hair drier", 90: "toothbrush"
-}
 
-continueReadingRFID = True
 
-# Intended constant for the escape key when using cv.waitKey
-ESC_KEY = 27
+
+
+
 
 # Banish this to the Shadow Realm so everything works properly
 selectTest()
