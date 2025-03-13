@@ -76,24 +76,30 @@ def OCRTest():
         img = getCameraFrame()
 
         # Modify frame for better reading
-        gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+        '''gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
         ret, thresh = cv.threshold(gray, 127, 255, cv.THRESH_BINARY)
+
+        # Display the image
         cv.imshow("e", thresh)
 
+        # Turn changed img into array
         img = np.array(thresh)
+        
+        # Get array text
+        text = pytesseract.image_to_string(img)'''
 
-        '''img = np.array(img)
+        img = np.array(img)
 
         img_empty = np.zeros((img.shape[0], img.shape[1]))
-        
-        img2 = cv.normalize(img, img_empty, 0, 255, cv.NORM_MINMAX)
-        
-        img3 = cv.threshold(img2, 100, 255, cv.THRESH_BINARY)[1]
-        
-        img4 = cv.GaussianBlur(img3, (1, 1), 0)
 
-        cv.imshow("E", img4)'''
-        
+        img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+
+        img = cv.normalize(img, img_empty, 0, 255, cv.NORM_MINMAX)
+
+        img = cv.threshold(img, 100, 255, cv.THRESH_BINARY)[1]
+
+        img = cv.GaussianBlur(img, (1, 1), 0)
+
         text = pytesseract.image_to_string(img)
         print(f"Gotten text <{text}>")
 
