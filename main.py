@@ -7,7 +7,6 @@ import RPi.GPIO as GPIO
 from time import sleep
 from PIL import Image
 from gpiozero import AngularServo
-from pirc522 import RFID
 from mfrc522 import SimpleMFRC522
 #import easyocr
 
@@ -110,7 +109,7 @@ def OCRTest():
         if exitOnEsc():
             break
 
-        sleep(2)
+        #sleep(2)
 
 # RFID test function
 def RFIDTest():
@@ -124,8 +123,7 @@ def RFIDTest():
             rfid.write("E")
     except KeyboardInterrupt:
         GPIO.cleanup()
-
-    
+ 
 # Servo test function
 def ServoTest():
     print("Started servo test")
