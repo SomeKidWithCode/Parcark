@@ -174,7 +174,7 @@ def chargeUserMoney():
         storedMoney -= CHARGE_RATE
     else:
         print("*Credit card declines*")
-    rfid.write(storedMoney)
+    rfid.write(str(storedMoney))
 
 # Debug function for writing money
 def moneyHax():
@@ -182,7 +182,7 @@ def moneyHax():
     try:
         money = int(input())
         print("Hold tag near reader")
-        rfid.write(money)
+        rfid.write(str(money))
         print(f"Set money to {money}")
     except ValueError:
         print(f"{money} is not a number")
