@@ -37,7 +37,7 @@ if not camera.isOpened():
 # ---------- Testing Rig Code ---------- #
 
 # Array of tests to do
-tests = ["OCR", "RFID", "Servo", "DB test", "Mon hax"]
+tests = ["OCR", "RFID", "Servo", "DB test", "Mon hax", "Exit"]
 
 # A loop to select a test
 def selectTest():
@@ -62,8 +62,11 @@ def selectTest():
             DBTest()
         elif selectedTest == "Mon hax":
             moneyHax()
-
-        print("Finshed/exited testing")
+        elif selectedTest == "Exit":
+            print("Finshed/exited testing")
+            cleanUpAndExit()
+        else:
+            selectTest()
     # ValueError means that 'int(input())' failed because the provided value was not a number
     except ValueError:
         print(f"{selectedTestNum} is not a number")
