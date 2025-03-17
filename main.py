@@ -37,7 +37,7 @@ if not camera.isOpened():
 # ---------- Testing Rig Code ---------- #
 
 # Array of tests to do
-tests = ["OCR", "RFID", "Servo", "DB test", "Mon hax", "Exit"]
+tests = ["OCR", "RFID", "Servo", "DB test", "Mon hax", "Charger test", "Exit"]
 
 # A loop to select a test
 def selectTest():
@@ -62,11 +62,13 @@ def selectTest():
             DBTest()
         elif selectedTest == "Mon hax":
             moneyHax()
+        elif selectedTest == "Charger test":
+            pass
         elif selectedTest == "Exit":
-            print("Finshed/exited testing")
+            print("Exited testing")
             cleanUpAndExit()
-        else:
-            selectTest()
+
+        selectTest()
     # ValueError means that 'int(input())' failed because the provided value was not a number
     except ValueError:
         print(f"{selectedTestNum} is not a number")
@@ -133,6 +135,9 @@ def ServoTest():
         sleep(2)
         servo.angle = -90  # Move to 180 degrees
 
+        if exitOnEsc():
+            break
+
 # Database test function
 def DBTest():
     print("Started database test")
@@ -167,14 +172,25 @@ def DBTest():
 # ---------- RFID Payment System ---------- #
 
 def chargeUserMoney():
-    print("Present credit card")
-    _, text = rfid.read()
-    storedMoney = int(text)
-    if storedMoney >= CHARGE_RATE:
-        storedMoney -= CHARGE_RATE
-    else:
-        print("*Credit card declines*")
-    rfid.write(str(storedMoney))
+    try:
+        print("Present credit card")
+        _, text = rfid.read()
+        storedMoney = int(text)
+        print(f"Current card balance: ${storedMoney}")
+        print(f"Current charge rate: ${CHARGE_RATE}")
+        
+        if storedMoney >= CHARGE_RATE:
+            print(f"New card balance: ${storedMoney}")
+            rfid.write(str(storedMoney))
+            storedMoney -= CHARGE_RATE
+        else:
+            print("*Credit card declines*")
+            print("You do not have enough cash. Prepare to die.")
+        
+    except ValueError:
+        print("The rfid tag presented has not been formatted properly. Please use the \'Mon hax\' test to set card data")
+    except Exception as e:
+        print(f"An exception occured: {e}")
 
 # Debug function for writing money
 def moneyHax():
@@ -229,9 +245,9 @@ def closeBoomGate():
 
 # Frame getter
 def getCameraFrame():
-    ret, frame = camera.read()
+    success, frame = camera.read()
     # This should probably have a condition for if the frame fetch fails
-    if ret:
+    if success:
         image = cv.resize(frame, (320, 240))
         return image
 
