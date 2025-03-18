@@ -92,8 +92,8 @@ def OCRTest():
         img = getCameraFrame()
 
         # Modify frame for better reading
-        #img = cv.resize(img, (320, 120))
-        img = cropImage(img, 100, 100, 100, 100)
+        img = cv.resize(img, (320, 100))
+        #img = cropImage(img, 100, 100, 100, 100)
 
         img = np.array(img)
 
