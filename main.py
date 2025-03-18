@@ -180,9 +180,9 @@ def chargeUserMoney():
         print(f"Current charge rate: ${CHARGE_RATE}")
         
         if storedMoney >= CHARGE_RATE:
-            print(f"New card balance: ${storedMoney}")
-            rfid.write(str(storedMoney))
             storedMoney -= CHARGE_RATE
+            rfid.write(str(storedMoney))
+            print(f"New card balance: ${storedMoney}")
         else:
             print("*Credit card declines*")
             print("You do not have enough cash. Prepare to die.")
