@@ -8,7 +8,7 @@ from time import sleep
 from gpiozero import AngularServo
 from mfrc522 import SimpleMFRC522
 
-import pytesseract, time
+import pytesseract, time, re
 
 # ---------- Variables ---------- #
 
@@ -109,7 +109,10 @@ def OCRTest():
 
         # Obtain the processed text
         text = pytesseract.image_to_string(img)
-        print(f"Text: <{text}>")
+        print(f"Raw text: <{text}>")
+        filteredText = "".join(re.findall("[0-9a-zA-Z-]", text))
+        print(f"Filtered text: <{filteredText}>")
+
 
         if exitOnEsc():
             break
