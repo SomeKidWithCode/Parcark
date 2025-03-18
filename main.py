@@ -63,7 +63,7 @@ def selectTest():
         elif selectedTest == "Mon hax":
             moneyHax()
         elif selectedTest == "Charger test":
-            pass
+            chargeUserMoney()
         elif selectedTest == "Exit":
             print("Exited testing")
             cleanUpAndExit()
@@ -255,7 +255,7 @@ def getCameraFrame():
 def cleanUpAndExit():
     camera.release()
     cv.destroyAllWindows()
-    rfid.cleanup()
+    #rfid.cleanup()
     GPIO.cleanup()
     exit()
 
