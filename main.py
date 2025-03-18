@@ -36,8 +36,8 @@ if not camera.isOpened():
 
 # ---------- Testing Rig Code ---------- #
 
-# Array of tests to do
-tests = ["OCR", "RFID", "Servo", "DB test", "Mon hax", "Charger test", "File test", "Exit"]
+# Array of tests that can be done
+tests = ["OCR", "RFID", "Servo", "DB test", "Mon hax", "Charger test", "File test", "Boomgate test", "Exit"]
 
 # A loop to select a test
 def selectTest():
@@ -69,6 +69,8 @@ def selectTest():
             cleanUpAndExit()
         elif selectedTest == "File test":
             FileTest()
+        elif selectedTest == "Boomgate test":
+            BoomgateTest()
 
         selectTest()
     # ValueError means that 'int(input())' failed because the provided value was not a number
@@ -88,32 +90,43 @@ def OCRTest():
     print("Started OCR test")
 
     while True:
-        # Get cam frame and show it
+        # Get cam frame
         img = getCameraFrame()
 
-        # Modify frame for better reading
-        #img = cv.resize(img, (320, 120))
-        img = cropImage(img, 100, 100, 100, 100)
+        if img is None:
+            continue
 
+        # Modify frame for better reading
+        img = cv.resize(img, (320, 120))
+
+        # Turn the image into a ndarray object
+        # This is NumPy's class for array manipulation
         img = np.array(img)
 
+        # Create an empty array using the dimensions of the img
         img_empty = np.zeros((img.shape[0], img.shape[1]))
 
         # Apply various image modifactions to make text reading easier
+
+        # Convert image from normal colorspace to grayscale colorspace
         img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+        # Applies normalisation. Since i can't understand the documentation for this, I assume that it means mapping the colors of the array
         img = cv.normalize(img, img_empty, 0, 255, cv.NORM_MINMAX)
+        # According to the docs, applies a threshold mechanic, as to effectively limit pixels colors whose values are to small or large
         img = cv.threshold(img, 100, 255, cv.THRESH_BINARY)[1]
+        # This applies a Gaussian filter. Magic really.
         img = cv.GaussianBlur(img, (1, 1), 0)
 
-        # Show the modified image
+        # Show the fully modified image
         cv.imshow("Camera Vision", img)
 
-        # Obtain the processed text
+        # Obtain the raw processed text
         text = pytesseract.image_to_string(img)
         print(f"Raw text: <{text}>")
+
+        # Use RegEx to filter the output so only characters we expect are outputed
         filteredText = "".join(re.findall("[0-9a-zA-Z-]", text))
         print(f"Filtered text: <{filteredText}>")
-
 
         if exitOnEsc():
             break
@@ -134,15 +147,14 @@ def RFIDTest():
 # Servo test function
 def ServoTest():
     print("Started servo test")
+    print("Ctrl+C must be used to stop this")
     while True:
         servo.angle = 0    # Move to 0 degrees
         sleep(2)
         servo.angle = 90   # Move to 90 degrees
         sleep(2)
         servo.angle = -90  # Move to 180 degrees
-
-        if exitOnEsc():
-            break
+        sleep(2)
 
 # Database test function
 def DBTest():
@@ -184,6 +196,16 @@ def FileTest():
     f = open("test.txt", "r")
     print(f.read())
 
+# Boom servo test
+def BoomgateTest():
+    print("Opening boomgate")
+    openBoomGate()
+    sleep(3)
+
+    print("Closing boomgate")
+    closeBoomGate()
+    sleep(3)
+
 # ---------- RFID Payment System ---------- #
 
 def chargeUserMoney():
@@ -211,8 +233,10 @@ def chargeUserMoney():
 def moneyHax():
     print("How much would you like to put on your card?")
     try:
+        # We do this to verify the the user input a number
         money = int(input())
         print("Hold tag near reader")
+        # RFID only accepts strings
         rfid.write(str(money))
         print(f"Set money to {money}")
     except ValueError:
@@ -259,19 +283,22 @@ def closeBoomGate():
 # ---------- Util Functions ---------- #
 
 # Frame getter
-def getCameraFrame():
+def getCameraFrame(resize = True, nW = 320, nH = 240):
     success, frame = camera.read()
-    # This should probably have a condition for if the frame fetch fails
     if success:
-        image = cv.resize(frame, (320, 240))
-        return image
+        if resize:
+            frame = cv.resize(frame, (nW, nH))
+        return frame
 
 # Fn for cleaning up handles and resource
 def cleanUpAndExit():
+    # Release the camera capture
     camera.release()
+    # Close all the OpenCV windows
     cv.destroyAllWindows()
-    #rfid.cleanup()
+    # Cleanup the GPIO system... whatever that actually does
     GPIO.cleanup()
+    # Exit the Python interpreter
     exit()
 
 # Fn for exiting on Escape key
@@ -279,6 +306,7 @@ def exitOnEsc():
     if cv.waitKey(1) == ESC_KEY:
         return True
 
+# Budget cropping function for images
 def cropImage(image, x, y, width, height):
      # Get image dimensions
     img_height, img_width = image.shape[:2]
