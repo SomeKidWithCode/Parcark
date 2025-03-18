@@ -276,7 +276,7 @@ def cleanUpAndExit():
 
 # Fn for exiting on Escape key
 def exitOnEsc():
-    if cv.waitKey(0) == ESC_KEY:
+    if cv.waitKey(1) == ESC_KEY:
         return True
 
 '''def cropImage(image, x, y, width, height):
