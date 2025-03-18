@@ -279,7 +279,7 @@ def exitOnEsc():
     if cv.waitKey(0) == ESC_KEY:
         return True
 
-def cropImage(img, x, y, width, height):
+def cropImage(image, x, y, width, height):
      # Get image dimensions
     img_height, img_width = image.shape[:2]
     
