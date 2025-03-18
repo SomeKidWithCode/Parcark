@@ -92,8 +92,8 @@ def OCRTest():
         img = getCameraFrame()
 
         # Modify frame for better reading
-        img = cv.resize(img, (320, 100))
-        #img = cropImage(img, 100, 100, 100, 100)
+        #img = cv.resize(img, (320, 120))
+        img = cropImage(img, 100, 100, 100, 100)
 
         img = np.array(img)
 
@@ -279,7 +279,7 @@ def exitOnEsc():
     if cv.waitKey(1) == ESC_KEY:
         return True
 
-'''def cropImage(image, x, y, width, height):
+def cropImage(image, x, y, width, height):
      # Get image dimensions
     img_height, img_width = image.shape[:2]
     
@@ -292,7 +292,7 @@ def exitOnEsc():
     # Perform the crop
     cropped_image = image[start_y:end_y, start_x:end_x]
     
-    return cropped_image'''
+    return cropped_image
 
 
 
