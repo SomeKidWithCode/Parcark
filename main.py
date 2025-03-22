@@ -10,9 +10,7 @@ from mfrc522 import SimpleMFRC522
 
 import pytesseract, time, re
 
-# ---------- Variables ---------- #
-
-continueReadingRFID = True
+# ---------- Constant Variables ---------- #
 
 # Intended constant for the escape key when using cv.waitKey
 ESC_KEY = 27
@@ -39,7 +37,7 @@ if not camera.isOpened():
 # Array of tests that can be done
 tests = ["OCR", "RFID", "Servo", "DB test", "Mon hax", "Charger test", "File test", "Boomgate test", "Exit"]
 
-# A loop to select a test
+# A loop to select tests
 def selectTest():
     print("Enter a test to run:")
     for test in tests:
@@ -110,7 +108,7 @@ def OCRTest():
 
         # Convert image from normal colorspace to grayscale colorspace
         img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-        # Applies normalisation. Since i can't understand the documentation for this, I assume that it means mapping the colors of the array
+        # Applies normalisation. Since I can't understand the documentation for this, I assume that it means mapping the colors of the array
         img = cv.normalize(img, img_empty, 0, 255, cv.NORM_MINMAX)
         # According to the docs, applies a threshold mechanic, as to effectively limit pixels colors whose values are to small or large
         img = cv.threshold(img, 100, 255, cv.THRESH_BINARY)[1]
@@ -124,7 +122,7 @@ def OCRTest():
         text = pytesseract.image_to_string(img)
         print(f"Raw text: <{text}>")
 
-        # Use RegEx to filter the output so only characters we expect are outputed
+        # Use RegEx to filter the output so only characters we expect are outputted
         filteredText = "".join(re.findall("[0-9a-zA-Z-]", text))
         print(f"Filtered text: <{filteredText}>")
 
@@ -265,7 +263,7 @@ class LPDatabase:
         if licensePlate in LPDatabase.lpDict:
             raise Exception("A duplicate license plate entry cannot exist")
         else:
-            LPDatabase.lpDict[licensePlate] = time.strftime("%H:%M:%S") # Yes. From here: https://stackoverflow.com/questions/14700073/24-hour-format-for-python-timestamp
+            LPDatabase.lpDict[licensePlate] = time.strftime("%H:%M:%S")
 
     @staticmethod
     def printDB():
@@ -306,21 +304,6 @@ def exitOnEsc():
     if cv.waitKey(1) == ESC_KEY:
         return True
 
-# Budget cropping function for images
-def cropImage(image, x, y, width, height):
-     # Get image dimensions
-    img_height, img_width = image.shape[:2]
-    
-    # Validate crop parameters
-    end_x = min(x + width, img_width)
-    end_y = min(y + height, img_height)
-    start_x = max(0, x)
-    start_y = max(0, y)
-    
-    # Perform the crop
-    cropped_image = image[start_y:end_y, start_x:end_x]
-    
-    return cropped_image
 
 
 
