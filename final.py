@@ -1,3 +1,5 @@
+# This is the final build file #
+
 # ---------- Imports ---------- #
 
 import cv2 as cv
@@ -32,57 +34,16 @@ if not camera.isOpened():
     print("Error: Could not open camera.")
     exit()
 
+def mainLoop():
+    pass
+
+def getOCRResult():
+    pass
+
+#def 
+
 # ---------- Testing Rig Code ---------- #
 
-# Array of tests that can be done
-tests = ["OCR", "RFID", "Servo", "DB test", "Mon hax", "Charger test", "File test", "Boomgate test", "Exit"]
-
-# A loop to select tests
-def selectTest():
-    print("Enter a test to run:")
-    for test in tests:
-        print(tests.index(test), ":", test)
-    
-    try:
-        selectedTestNum = int(input())
-
-        selectedTest = tests[selectedTestNum]
-        print("Selected", selectedTest)
-        print()
-
-        if selectedTest == "OCR":
-            OCRTest()
-        elif selectedTest == "RFID":
-            RFIDTest()
-        elif selectedTest == "Servo":
-            ServoTest()
-        elif selectedTest == "DB test":
-            DBTest()
-        elif selectedTest == "Mon hax":
-            moneyHax()
-        elif selectedTest == "Charger test":
-            chargeUserMoney()
-        elif selectedTest == "Exit":
-            print("Exited testing")
-            cleanUpAndExit()
-        elif selectedTest == "File test":
-            FileTest()
-        elif selectedTest == "Boomgate test":
-            BoomgateTest()
-
-        selectTest()
-    # ValueError means that 'int(input())' failed because the provided value was not a number
-    except ValueError:
-        print(f"{selectedTestNum} is not a number")
-        selectTest()
-    # IndexError means that 'tests[selectedTestNum]' failed because the provided number was too high or low
-    except IndexError:
-        print("That is not an option")
-        selectTest()
-    # Anything else is just a general exception
-    except Exception as e:
-        print(f"An exception occured: {e}")
-        
 # OCR test function
 def OCRTest():
     print("Started OCR test")
@@ -141,18 +102,6 @@ def RFIDTest():
             rfid.write("E")
     except KeyboardInterrupt:
         GPIO.cleanup()
- 
-# Servo test function
-def ServoTest():
-    print("Started servo test")
-    print("Ctrl+C must be used to stop this")
-    while True:
-        servo.angle = 0    # Move to 0 degrees
-        sleep(2)
-        servo.angle = 90   # Move to 90 degrees
-        sleep(2)
-        servo.angle = -90  # Move to 180 degrees
-        sleep(2)
 
 # Database test function
 def DBTest():
@@ -184,25 +133,6 @@ def DBTest():
         print(f"Received exception: {e}")
     print(val)
     print("Did pull error test")
-
-# File test
-def FileTest():
-    # w is for writing, creates if it doesn't exist
-    f = open("test.txt", "w")
-    f.write("So uh\nnewlines huh?\nwonder if they work?")
-    # r is reading, error if file doesn't exist
-    f = open("test.txt", "r")
-    print(f.read())
-
-# Boom servo test
-def BoomgateTest():
-    print("Opening boomgate")
-    openBoomGate()
-    sleep(3)
-
-    print("Closing boomgate")
-    closeBoomGate()
-    sleep(3)
 
 # ---------- RFID Payment System ---------- #
 
@@ -310,4 +240,4 @@ def exitOnEsc():
 
 
 # Banish this to the Shadow Realm so everything works properly
-selectTest()
+mainLoop()
