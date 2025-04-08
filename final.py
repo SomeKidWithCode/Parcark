@@ -35,18 +35,11 @@ if not camera.isOpened():
     exit()
 
 def mainLoop():
-    pass
+    getOCRResult()
 
 def getOCRResult():
-    pass
-
-#def 
-
-# ---------- Testing Rig Code ---------- #
-
-# OCR test function
-def OCRTest():
-    print("Started OCR test")
+    sameResultCount = 0
+    ocrRes = None
 
     while True:
         # Get cam frame
@@ -81,14 +74,29 @@ def OCRTest():
 
         # Obtain the raw processed text
         text = pytesseract.image_to_string(img)
-        print(f"Raw text: <{text}>")
 
         # Use RegEx to filter the output so only characters we expect are outputted
         filteredText = "".join(re.findall("[0-9a-zA-Z-]", text))
-        print(f"Filtered text: <{filteredText}>")
+
+        if ocrRes == filteredText:
+            sameResultCount = sameResultCount + 1
+        else:
+            ocrRes = filteredText
+            sameResultCount = 0
+
+        if sameResultCount == 5:
+            break
+        
+        print(f"result: {ocrRes}, same res count: {sameResultCount}")
 
         if exitOnEsc():
             break
+    
+    print(f"final result: {ocrRes}")
+
+#def 
+
+# ---------- Testing Rig Code ---------- #
 
 # RFID test function
 def RFIDTest():
