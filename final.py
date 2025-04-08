@@ -78,7 +78,7 @@ def getOCRResult():
         # Use RegEx to filter the output so only characters we expect are outputted
         filteredText = "".join(re.findall("[0-9a-zA-Z-]", text))
 
-        if ocrRes == filteredText:
+        if ocrRes == filteredText and ocrRes != "":
             sameResultCount = sameResultCount + 1
         else:
             ocrRes = filteredText
