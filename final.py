@@ -21,8 +21,8 @@ ESC_KEY = 27
 CHARGE_RATE = 5
 
 # Intended constants for the slicing dimensions for OCR
-OCR_SLICE_WIDTH = 100
-OCR_SLICE_HEIGHT = 100
+OCR_SLICE_WIDTH = 700
+OCR_SLICE_HEIGHT = 200
 
 # ---------- External Peripheral Creation ---------- #
 
