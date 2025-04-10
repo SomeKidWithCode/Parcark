@@ -55,7 +55,17 @@ def getOCRResult():
         # Modify frame for better reading
         width = img.shape[0]
         height = img.shape[1]
-        img = img[width / 2 - OCR_SLICE_WIDTH / 2:OCR_SLICE_WIDTH, height / 2 - OCR_SLICE_HEIGHT / 2:OCR_SLICE_HEIGHT]
+        img = img[
+            round(width / 2 - OCR_SLICE_WIDTH / 2)
+            :
+            round(width / 2 - OCR_SLICE_WIDTH / 2) + OCR_SLICE_WIDTH
+            
+            ,
+
+            round(height / 2 - OCR_SLICE_HEIGHT / 2)
+            :
+            round(height / 2 - OCR_SLICE_HEIGHT / 2) + OCR_SLICE_HEIGHT
+        ]
 
         # Turn the image into a ndarray object
         # This is NumPy's class for array manipulation
