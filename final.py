@@ -20,6 +20,10 @@ ESC_KEY = 27
 # Intended constant for the amount of money charged when exiting
 CHARGE_RATE = 5
 
+# Intended constants for the slicing dimensions for OCR
+OCR_SLICE_WIDTH = 100
+OCR_SLICE_HEIGHT = 100
+
 # ---------- External Peripheral Creation ---------- #
 
 # Create servo object
@@ -43,13 +47,15 @@ def getOCRResult():
 
     while True:
         # Get cam frame
-        img = getCameraFrame()
+        img = getCameraFrame(False)
 
         if img is None:
             continue
 
         # Modify frame for better reading
-        img = cv.resize(img, (320, 120))
+        width = img.shape[0]
+        height = img.shape[1]
+        img = img[width / 2 - OCR_SLICE_WIDTH / 2:OCR_SLICE_WIDTH, height / 2 - OCR_SLICE_HEIGHT / 2:OCR_SLICE_HEIGHT]
 
         # Turn the image into a ndarray object
         # This is NumPy's class for array manipulation
