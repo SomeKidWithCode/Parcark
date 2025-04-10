@@ -52,20 +52,25 @@ def getOCRResult():
         if img is None:
             continue
 
-        # Modify frame for better reading
-        width = img.shape[0]
-        height = img.shape[1]
-        img = img[
-            round(width / 2 - OCR_SLICE_WIDTH / 2)
-            :
-            round(width / 2 - OCR_SLICE_WIDTH / 2) + OCR_SLICE_WIDTH
-            
-            ,
 
-            round(height / 2 - OCR_SLICE_HEIGHT / 2)
-            :
-            round(height / 2 - OCR_SLICE_HEIGHT / 2) + OCR_SLICE_HEIGHT
-        ]
+
+        # Modify frame for better reading
+        height, width = img.shape[:2]
+    
+        # Calculate center coordinates
+        mid_x, mid_y = width // 2, height // 2
+        
+        # Calculate crop boundaries
+        cw2, ch2 = crop_width // 2, crop_height // 2
+        x_start = mid_x - cw2
+        x_end = mid_x + cw2 + (crop_width % 2)  # Handles odd widths
+        y_start = mid_y - ch2
+        y_end = mid_y + ch2 + (crop_height % 2)  # Handles odd heights
+        
+        # Perform the crop
+        img = img[y_start:y_end, x_start:x_end]
+
+
 
         # Turn the image into a ndarray object
         # This is NumPy's class for array manipulation
