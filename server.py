@@ -27,7 +27,7 @@ def handle_client(conn, addr):
             if msg == DISCONNECT_MESSAGE:
                 connected = False
                 print(f"{addr} has diconnected")
-                
+
         
     conn.close()
 
@@ -40,7 +40,7 @@ def start():
         conn, addr = server.accept()
         thread = threading.Thread(target=handle_client, args=(conn, addr))
         thread.start()
-        print(f"{threading.activeCount() - 1} threads active")
+        print(f"{threading.active_count() - 1} threads active")
 
 
 
