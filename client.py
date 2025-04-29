@@ -21,12 +21,14 @@ def send(msg):
     client.send(message)
 
 while True:
-    print("Message")
+    print("Message to send:")
     msg = input()
     if msg == "stop":
         send(DISCONNECT_MESSAGE)
+        break
     else:
         send(msg)
 
+print("Stopped")
 
 
