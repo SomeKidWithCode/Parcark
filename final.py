@@ -96,7 +96,7 @@ def getOCRResult():
         # Obtain the raw processed text
         text = pytesseract.image_to_string(img)
 
-        # Use RegEx to filter the output so only characters we expect are outputted
+        # Use RegEx to filter the output so only characters we expect are outputed
         filteredText = "".join(re.findall("[0-9a-zA-Z-]", text))
 
         if ocrRes == filteredText and ocrRes != "":
@@ -242,15 +242,18 @@ def getCameraFrame(resize = True, nW = 320, nH = 240):
             frame = cv.resize(frame, (nW, nH))
         return frame
 
-# Fn for cleaning up handles and resource
+# Fn for cleaning up handles and resources
 def cleanUpAndExit():
     # Release the camera capture
     camera.release()
+
     # Close all the OpenCV windows
     cv.destroyAllWindows()
+
     # Cleanup the GPIO system... whatever that actually does
     GPIO.cleanup()
-    # Exit the Python interpreter
+
+    # Exit the Python runtime
     exit()
 
 # Fn for exiting on Escape key
