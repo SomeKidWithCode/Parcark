@@ -6,8 +6,8 @@ import binascii
 
 FORMAT = "utf-8"
 
-def fixBS(str):
-    return "".join(str.split())
+def fixBS(s):
+    return str(s)
 
 def genKeys():
     print("Generating keys...")
