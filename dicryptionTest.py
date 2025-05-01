@@ -24,7 +24,7 @@ def genKeys():
 
 def encryptText(text):
     print("Encrypting text...")
-    publicHex = binascii.unhexlify(fixBS(publicKey))
+    publicHex = binascii.unhexlify((publicKey))
 
     encryptedText = encrypt(publicHex, text.encode(FORMAT))
 
@@ -32,9 +32,9 @@ def encryptText(text):
 
 def decryptText(text):
     print("Decrypting text...")
-    privateHex = binascii.unhexlify(fixBS(privateKey))
+    privateHex = binascii.unhexlify((privateKey))
 
-    encryptedHex = binascii.unhexlify(fixBS(text))
+    encryptedHex = binascii.unhexlify((text))
 
     decryptedText = decrypt(privateHex, encryptedHex)
 
