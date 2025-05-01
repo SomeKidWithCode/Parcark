@@ -6,15 +6,13 @@ import binascii
 
 FORMAT = "utf-8"
 
-def fixBS(s):
-    return str(s)
-
 def genKeys():
     print("Generating keys...")
     key = generate_key()
     secretBytes = key.secret
     publicBytes = key.public_key.format(True)
 
+    # I don't know why it's like this, only that is (it has to be this way) 
     global privateKey
     global publicKey
 
@@ -24,7 +22,7 @@ def genKeys():
 
 def encryptText(text):
     print("Encrypting text...")
-    publicHex = binascii.unhexlify((publicKey))
+    publicHex = binascii.unhexlify(publicKey)
 
     encryptedText = encrypt(publicHex, text.encode(FORMAT))
 
@@ -32,9 +30,9 @@ def encryptText(text):
 
 def decryptText(text):
     print("Decrypting text...")
-    privateHex = binascii.unhexlify((privateKey))
+    privateHex = binascii.unhexlify(privateKey)
 
-    encryptedHex = binascii.unhexlify((text))
+    encryptedHex = binascii.unhexlify(text)
 
     decryptedText = decrypt(privateHex, encryptedHex)
 
