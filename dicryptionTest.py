@@ -1,6 +1,7 @@
 # It's time for encryption :D
 
-from ecies.utils import generate_key, encrypt, decrypt
+from ecies.utils import generate_key
+from ecies import encrypt, decrypt
 import binascii
 
 FORMAT = "utf-8"
