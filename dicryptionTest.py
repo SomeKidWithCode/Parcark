@@ -9,6 +9,8 @@ FORMAT = "utf-8"
 privateKey = None
 publicKey = None
 
+def fixBS(str):
+    return "".join(str.split())
 
 def genKeys():
     print("Generating keys...")
@@ -22,7 +24,7 @@ def genKeys():
 
 def encryptText(text):
     print("Encrypting text...")
-    publicHex = binascii.unhexlify(publicKey)
+    publicHex = binascii.unhexlify(fixBS(publicKey))
 
     encryptedText = encrypt(publicHex, text.encode(FORMAT))
 
@@ -30,9 +32,9 @@ def encryptText(text):
 
 def decryptText(text):
     print("Decrypting text...")
-    privateHex = binascii.unhexlify(privateKey)
+    privateHex = binascii.unhexlify(fixBS(privateKey))
 
-    encryptedHex = binascii.unhexlify(text)
+    encryptedHex = binascii.unhexlify(fixBS(text))
 
     decryptedText = decrypt(privateHex, encryptedHex)
 
@@ -40,7 +42,7 @@ def decryptText(text):
 
 def dicryptionTest():
     print("Started dicryption test")
-    print("Mesage to test:")
+    print("Message to test:")
     msg = input()
     if msg == "":
         msg = "Failure"
