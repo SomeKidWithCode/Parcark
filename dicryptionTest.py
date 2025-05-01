@@ -6,9 +6,6 @@ import binascii
 
 FORMAT = "utf-8"
 
-privateKey = None
-publicKey = None
-
 def fixBS(str):
     return "".join(str.split())
 
@@ -17,6 +14,9 @@ def genKeys():
     key = generate_key()
     secretBytes = key.secret
     publicBytes = key.public_key.format(True)
+
+    global privateKey
+    global publicKey
 
     privateKey = binascii.hexlify(secretBytes)
     publicKey = binascii.hexlify(publicBytes)
