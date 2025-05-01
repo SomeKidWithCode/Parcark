@@ -47,6 +47,7 @@ def dicryptionTest():
     if msg == "":
         msg = "Failure"
     genKeys()
+    print(f"Keys: Public: {privateKey}. Private: {publicKey}")
     encMsg = encryptText(msg)
     print(f"Encrypted message: {encMsg}")
     decMsg = decryptText(encMsg)
