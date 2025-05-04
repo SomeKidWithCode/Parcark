@@ -6,7 +6,7 @@ HEADER = 64
 PORT = 50512
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "DISCONNECT"
-SERVER = "10.190.207.221"#socket.gethostbyname(socket.gethostname())
+SERVER = "10.190.207.221" #socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

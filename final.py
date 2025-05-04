@@ -9,20 +9,32 @@ import RPi.GPIO as GPIO
 from time import sleep
 from gpiozero import AngularServo
 from mfrc522 import SimpleMFRC522
+from enum import Enum
+from ecies.utils import generate_key
+from ecies import encrypt, decrypt
 
-import pytesseract, time, re
+import pytesseract, time, re, socket, binascii
 
 # ---------- Constant Variables ---------- #
 
-# Intended constant for the escape key when using cv.waitKey
+# Constant for the escape key when using cv.waitKey
 ESC_KEY = 27
 
-# Intended constant for the amount of money charged when exiting
+# Constant for the amount of money charged when exiting
 CHARGE_RATE = 5
 
-# Intended constants for the slicing dimensions for OCR
+# Constants for the slicing dimensions for OCR
 OCR_SLICE_WIDTH = 700
 OCR_SLICE_HEIGHT = 200
+
+# ----- Socket Constants ----- #
+
+HEADER = 64                         # Header message size
+PORT = 50512                        # Server port
+FORMAT = "utf-8"                    # encode/decode format
+DISCONNECT_MESSAGE = "DISCONNECT"   # Disconnect message
+SERVER = "10.190.207.221"           # Sever IP Address
+ADDR = (SERVER, PORT)               # IP-Port tuple
 
 # ---------- External Peripheral Creation ---------- #
 
@@ -37,6 +49,11 @@ camera = cv.VideoCapture(0)
 if not camera.isOpened():
     print("Error: Could not open camera.")
     exit()
+
+def init():
+    SocketHandler.init()
+    log("init", "Entering main loop.")
+    mainLoop()
 
 def mainLoop():
     getOCRResult()
@@ -213,6 +230,14 @@ class LPDatabase:
             val = LPDatabase.lpDict[licensePlate]
             # Pop deletes an entry in a dictionary
             LPDatabase.lpDict.pop(licensePlate)
+
+            log("LPDatabase", "Attempting to charge {licensePlate}")
+            sckt_msg = SocketHandler.send(f"{DatabaseCommands.TRYCHARGE}:{licensePlate}:{666}:{6.9}")
+            if sckt_msg == "NULL":
+                print("User account empty")
+            else:
+                print("Charge successful")
+
             return val
         else:
             raise Exception("Unable to fetch time from non-existent entry")
@@ -223,6 +248,77 @@ class LPDatabase:
             raise Exception("A duplicate license plate entry cannot exist")
         else:
             LPDatabase.lpDict[licensePlate] = time.strftime("%H:%M:%S")
+
+            log("LPDatabase", "Adding license plate {licensePlate} to register")
+            SocketHandler.send(f"{DatabaseCommands.REGISTERPLATE}:{licensePlate}:{666}:{420}")
+
+
+# ---------- Socket Handler Class ---------- #
+
+class SocketHandler:
+    clientSocket = None
+
+    @staticmethod
+    def init():
+        log("SocketHandler", "Initalizing socket connection...")
+        SocketHandler.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        SocketHandler.clientSocket.connect(ADDR)
+        log("SocketHandler", "Socket connected")
+
+    # Be aware that this method (currently) blocks while it waits for server to respond
+    @staticmethod
+    def send(send_msg):
+        message = send_msg.encode(FORMAT)
+        send_msg_length = len(message)
+        send_length = str(send_msg_length).encode(FORMAT)
+        send_length += b" " * (HEADER - len(send_length))
+        client.send(send_length)
+        client.send(message)
+        log("SocketHandler", f"Sent message to {SERVER} on port {PORT}: {msg}")
+
+        receive_msg_length = conn.recv(HEADER).decode(FORMAT)
+        if receive_msg_length:
+            receive_msg_length = int(msg_length)
+            receive_msg = conn.recv(receive_msg_length).decode(FORMAT)
+            log("SocketHandler", "Received message from {SERVER} on port {PORT}: {receive_msg}")
+            return receive_msg
+    
+    @staticmethod
+    def disconnect():
+        SocketHandler.send(DISCONNECT_MESSAGE)
+        log("SocketHandler", "Disconnected from socket")
+
+class DatabaseCommands(Enum):
+    TRYCHARGE = "TRYCHARGE"
+    GETBANKBALANCE = "GETBANKBALANCE"
+    REGISTERPLATE = "REGISTERPLATE"
+    DISCONNECT = DISCONNECT_MESSAGE
+
+    GETPLATEINFO = 0xf
+    SHUTDOWN = 0xff
+
+# ---------- En/Decryption Class ---------- #
+
+# That's just what I name classes that do both encryption and decryption
+class DicryptionHandler:
+    @staticmethod
+    def generateKeys():
+        log("DicryptionHandler", "Generating new key pair...")
+        key = generate_key()
+
+        privateKey = binascii.hexlify(key.secret)
+        publicKey = binascii.hexlify(key.public_key.format(True))
+
+        log("DicryptionHandler", "Generated new key pair")
+        return (privateKey, publicKey)
+
+    @staticmethod
+    def encryptText(text):
+        log("DicryptionHandler", "Attempting to encrypt message")
+
+    @staticmethod    
+    def decryptText(text):
+        log("DicryptionHandler", "Attempting to decrypt message")
 
 # ---------- Quick functions for opening and closing the boomgate ---------- #
 
@@ -253,6 +349,9 @@ def cleanUpAndExit():
     # Cleanup the GPIO system... whatever that actually does
     GPIO.cleanup()
 
+    # Disconnect from the socket
+    SocketHandler.disconnect()
+
     # Exit the Python runtime
     exit()
 
@@ -261,6 +360,9 @@ def exitOnEsc():
     if cv.waitKey(1) == ESC_KEY:
         return True
 
+# Pretty printing for 'debug' messages
+def log(source, msg):
+    print(f"[{time.strftime("%H:%M:%S")} - {source}]: {msg}")
 
 
 
@@ -272,4 +374,4 @@ def exitOnEsc():
 
 
 # Banish this to the Shadow Realm so everything works properly
-mainLoop()
+init()
