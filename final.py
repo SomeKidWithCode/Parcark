@@ -9,7 +9,6 @@ import RPi.GPIO as GPIO
 from time import sleep
 from gpiozero import AngularServo
 from mfrc522 import SimpleMFRC522
-from enum import Enum
 from ecies.utils import generate_key
 from ecies import encrypt, decrypt
 
@@ -53,13 +52,14 @@ if not camera.isOpened():
 def init():
     SocketHandler.init()
 
+
     print("testing time :D")
 
     lP = "ABCXYZ"
-
     LPDatabase.push(lP)
-
     print(LPDatabase.pull(lP))
+
+
     #log("init", "Entering main loop.")
     #mainLoop()
 
@@ -260,7 +260,6 @@ class LPDatabase:
             log("LPDatabase", "Adding license plate {licensePlate} to register")
             SocketHandler.send(f"{DatabaseCommands.REGISTERPLATE}:{licensePlate}:{666}:{420}")
 
-
 # ---------- Socket Handler Class ---------- #
 
 class SocketHandler:
@@ -301,7 +300,7 @@ class SocketHandler:
         SocketHandler.send(DISCONNECT_MESSAGE)
         log("SocketHandler", "Disconnected from socket")
 
-class DatabaseCommands(Enum):
+class DatabaseCommands:
     TRYCHARGE = "TRYCHARGE"
     GETBANKBALANCE = "GETBANKBALANCE"
     REGISTERPLATE = "REGISTERPLATE"
