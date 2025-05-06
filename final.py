@@ -242,7 +242,7 @@ class LPDatabase:
             LPDatabase.lpDict.pop(licensePlate)
 
             log("LPDatabase", "Attempting to charge {licensePlate}")
-            sckt_msg = SocketHandler.send(f"{DatabaseCommands.TRYCHARGE}:{licensePlate}:{666}:{6.9}")
+            sckt_msg = SocketHandler.send(f"{DatabaseCommands.TRYCHARGE}:{licensePlate}:{6969}:{6.4}")
             if sckt_msg == "NULL":
                 print("User account empty")
             else:
@@ -260,7 +260,7 @@ class LPDatabase:
             LPDatabase.lpDict[licensePlate] = time.strftime("%H:%M:%S")
 
             log("LPDatabase", "Adding license plate {licensePlate} to register")
-            SocketHandler.send(f"{DatabaseCommands.REGISTERPLATE}:{licensePlate}:{666}:{420}")
+            SocketHandler.send(f"{DatabaseCommands.REGISTERPLATE}:{licensePlate}:{6969}:{420}")
 
 # ---------- Socket Handler Class ---------- #
 
