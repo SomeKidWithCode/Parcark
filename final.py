@@ -287,11 +287,11 @@ class SocketHandler:
         send_length += b" " * (HEADER - len(send_length))
         SocketHandler.clientSocket.send(send_length)
         SocketHandler.clientSocket.send(message)
-        log("SocketHandler", f"Sent message to {SERVER} on port {PORT}: {msg}")
+        log("SocketHandler", f"Sent message to {SERVER} on port {PORT}: {send_msg}")
 
         receive_msg_length = SocketHandler.clientSocket.recv(HEADER).decode(FORMAT)
         if receive_msg_length:
-            receive_msg_length = int(msg_length)
+            receive_msg_length = int(receive_msg_length)
             receive_msg = SocketHandler.clientSocket.recv(receive_msg_length).decode(FORMAT)
             log("SocketHandler", "Received message from {SERVER} on port {PORT}: {receive_msg}")
             return receive_msg
@@ -394,7 +394,7 @@ def exitOnEsc():
 
 # Pretty printing for 'debug' messages
 def log(source, msg):
-    print(f"[{time.strftime("%H:%M:%S")} - {source}]: {msg}")
+    print(f"[{time.strftime('%H:%M:%S')} - {source}]: {msg}")
 
 
 
