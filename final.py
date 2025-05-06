@@ -1,5 +1,7 @@
 # This is the final build file #
 
+# String.prototype.ljust(64, " ")
+
 # ---------- Imports ---------- #
 
 import cv2 as cv
@@ -32,7 +34,7 @@ HEADER = 64                         # Header message size
 PORT = 50512                        # Server port
 FORMAT = "utf-8"                    # encode/decode format
 DISCONNECT_MESSAGE = "DISCONNECT"   # Disconnect message
-SERVER = "10.76.13.116"           # Sever IP Address
+SERVER = "10.76.13.116"             # Sever IP Address
 ADDR = (SERVER, PORT)               # IP-Port tuple
 
 # ---------- External Peripheral Creation ---------- #
@@ -273,9 +275,6 @@ class SocketHandler:
         log("SocketHandler", "Socket connected")
         key = SocketHandler.clientSocket.recv(HEADER).decode(FORMAT)
         print(key)
-
-
-
 
     # Be aware that this method (currently) blocks while it waits for server to respond
     @staticmethod
