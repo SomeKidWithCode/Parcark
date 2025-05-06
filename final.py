@@ -33,7 +33,7 @@ HEADER = 64                         # Header message size
 PORT = 50512                        # Server port
 FORMAT = "utf-8"                    # encode/decode format
 DISCONNECT_MESSAGE = "DISCONNECT"   # Disconnect message
-SERVER = "10.190.207.221"           # Sever IP Address
+SERVER = "10.76.13.116"           # Sever IP Address
 ADDR = (SERVER, PORT)               # IP-Port tuple
 
 # ---------- External Peripheral Creation ---------- #
@@ -272,6 +272,11 @@ class SocketHandler:
         SocketHandler.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         SocketHandler.clientSocket.connect(ADDR)
         log("SocketHandler", "Socket connected")
+        key = SocketHandler.clientSocket.recv(HEADER).decode(FORMAT)
+        print(key)
+
+
+
 
     # Be aware that this method (currently) blocks while it waits for server to respond
     @staticmethod
@@ -280,14 +285,14 @@ class SocketHandler:
         send_msg_length = len(message)
         send_length = str(send_msg_length).encode(FORMAT)
         send_length += b" " * (HEADER - len(send_length))
-        client.send(send_length)
-        client.send(message)
+        SocketHandler.clientSocket.send(send_length)
+        SocketHandler.clientSocket.send(message)
         log("SocketHandler", f"Sent message to {SERVER} on port {PORT}: {msg}")
 
-        receive_msg_length = conn.recv(HEADER).decode(FORMAT)
+        receive_msg_length = SocketHandler.clientSocket.recv(HEADER).decode(FORMAT)
         if receive_msg_length:
             receive_msg_length = int(msg_length)
-            receive_msg = conn.recv(receive_msg_length).decode(FORMAT)
+            receive_msg = SocketHandler.clientSocket.recv(receive_msg_length).decode(FORMAT)
             log("SocketHandler", "Received message from {SERVER} on port {PORT}: {receive_msg}")
             return receive_msg
     
