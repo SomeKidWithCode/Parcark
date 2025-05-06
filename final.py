@@ -52,8 +52,16 @@ if not camera.isOpened():
 
 def init():
     SocketHandler.init()
-    log("init", "Entering main loop.")
-    mainLoop()
+
+    print("testing time :D")
+
+    lP = "ABCXYZ"
+
+    LPDatabase.push(lP)
+
+    print(LPDatabase.pull(lP))
+    #log("init", "Entering main loop.")
+    #mainLoop()
 
 def mainLoop():
     getOCRResult()
@@ -301,24 +309,43 @@ class DatabaseCommands(Enum):
 
 # That's just what I name classes that do both encryption and decryption
 class DicryptionHandler:
+    privateKey = None
+    publicKey = None
+
+
     @staticmethod
     def generateKeys():
         log("DicryptionHandler", "Generating new key pair...")
         key = generate_key()
 
-        privateKey = binascii.hexlify(key.secret)
-        publicKey = binascii.hexlify(key.public_key.format(True))
+        DicryptionHandler.privateKey = binascii.hexlify(key.secret)
+        DicryptionHandler.publicKey = binascii.hexlify(key.public_key.format(True))
 
         log("DicryptionHandler", "Generated new key pair")
-        return (privateKey, publicKey)
 
     @staticmethod
     def encryptText(text):
+        DicryptionHandler.generateKeys()
+
         log("DicryptionHandler", "Attempting to encrypt message")
+
+        unhexedPublicKey = binascii.unhexlify(DicryptionHandler.publicKey)
+
+        encryptedText = encrypt(unhexedPublicKey, text.encode(FORMAT))
+
+        return binascii.hexlify(encryptedText)
 
     @staticmethod    
     def decryptText(text):
         log("DicryptionHandler", "Attempting to decrypt message")
+
+        unhexedPrivateKey = binascii.unhexlify(DicryptionHandler.privateKey)
+
+        unhexedText = binascii.unhexlify(text)
+
+        decryptedText = decrypt(unhexedPrivateKey, unhexedText)
+
+        return decryptedText.decode(FORMAT)
 
 # ---------- Quick functions for opening and closing the boomgate ---------- #
 
