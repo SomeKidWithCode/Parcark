@@ -275,9 +275,9 @@ class SocketHandler:
         SocketHandler.clientSocket.connect(ADDR)
         log("SocketHandler", "Socket connected")
 
-        key_length = SocketHandler.clientSocket.recv(HEADER).decode(FORMAT)
-        key = SocketHandler.clientSocket.recv(HEADER).decode(FORMAT)
+        public_key = SocketHandler.receive()
 
+        log("SocketHandler", "")
         print("Public key: " + key)
 
     # Be aware that this method (currently) blocks while it waits for server to respond
@@ -298,6 +298,11 @@ class SocketHandler:
             log("SocketHandler", "Received message from {SERVER} on port {PORT}: {receive_msg}")
             return receive_msg
     
+    @staticmethod
+    def receive():
+        msg_length = SocketHandler.clientSocket.recv(HEADER).decode(FORMAT)
+        return SocketHandler.clientSocket.recv(HEADER).decode(FORMAT)
+
     @staticmethod
     def disconnect():
         SocketHandler.send(DISCONNECT_MESSAGE)
@@ -396,7 +401,7 @@ def exitOnEsc():
 
 # Pretty printing for 'debug' messages
 def log(source, msg):
-    print(f"[{time.strftime('%H:%M:%S')} - {source}]: {msg}")
+    print(f"[{time.strftime('%H:%M:%S')}] [{source}]: {msg}")
 
 
 
