@@ -260,7 +260,7 @@ class LPDatabase:
         else:
             LPDatabase.lpDict[licensePlate] = time.strftime("%H:%M:%S")
 
-            log("LPDatabase", "Adding license plate {licensePlate} to register")
+            log("LPDatabase", f"Adding license plate '{licensePlate}' to register")
             SocketHandler.send(f"{DatabaseCommands.REGISTERPLATE}:{licensePlate}:{6969}:{420}")
 
 # ---------- Socket Handler Class ---------- #
@@ -277,7 +277,7 @@ class SocketHandler:
 
         public_key = SocketHandler.receive()
 
-        log("SocketHandler", "")
+        log("SocketHandler", "Received public key")
         print("Public key: " + public_key)
 
     # Be aware that this method (currently) blocks while it waits for server to respond
@@ -289,19 +289,19 @@ class SocketHandler:
         send_length += b" " * (HEADER - len(send_length))
         SocketHandler.clientSocket.send(send_length)
         SocketHandler.clientSocket.send(message)
-        log("SocketHandler", f"Sent message to {SERVER} on port {PORT}: {send_msg}")
+        log("SocketHandler", f"Sent message to '{SERVER}' on port '{PORT}': {send_msg}")
 
-        receive_msg_length = SocketHandler.clientSocket.recv(HEADER).decode(FORMAT)
-        if receive_msg_length:
-            receive_msg_length = int(receive_msg_length)
-            receive_msg = SocketHandler.clientSocket.recv(receive_msg_length).decode(FORMAT)
-            log("SocketHandler", "Received message from {SERVER} on port {PORT}: {receive_msg}")
-            return receive_msg
+        receive_msg = SocketHandler.receive()
+        log("SocketHandler", "Received message from {SERVER} on port {PORT}: {receive_msg}")
+        return receive_msg
     
     @staticmethod
     def receive():
         msg_length = SocketHandler.clientSocket.recv(HEADER).decode(FORMAT)
-        return SocketHandler.clientSocket.recv(HEADER).decode(FORMAT)
+        if msg_length:
+            return SocketHandler.clientSocket.recv(int(msg_length)).decode(FORMAT)
+        else:
+            raise Exception("Receiving length doesn't exist")
 
     @staticmethod
     def disconnect():
