@@ -35,7 +35,7 @@ HEADER = 64                         # Header message size
 PORT = 50512                        # Server port
 FORMAT = "utf-8"                    # encode/decode format
 DISCONNECT_MESSAGE = "DISCONNECT"   # Disconnect message
-SERVER = "127.0.0.1"             # Sever IP Address
+SERVER = "127.0.1.1"             # Sever IP Address
 ADDR = (SERVER, PORT)               # IP-Port tuple
 
 # ---------- External Peripheral Creation ---------- #
