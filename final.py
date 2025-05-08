@@ -1,6 +1,7 @@
 # This is the final build file #
 
 # String.prototype.ljust(64, " ")
+# CARD should be the UID of the rfid tag
 
 # ---------- Imports ---------- #
 
@@ -34,7 +35,7 @@ HEADER = 64                         # Header message size
 PORT = 50512                        # Server port
 FORMAT = "utf-8"                    # encode/decode format
 DISCONNECT_MESSAGE = "DISCONNECT"   # Disconnect message
-SERVER = "10.76.13.116"             # Sever IP Address
+SERVER = "127.0.0.1"             # Sever IP Address
 ADDR = (SERVER, PORT)               # IP-Port tuple
 
 # ---------- External Peripheral Creation ---------- #
@@ -273,8 +274,11 @@ class SocketHandler:
         SocketHandler.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         SocketHandler.clientSocket.connect(ADDR)
         log("SocketHandler", "Socket connected")
+
+        key_length = SocketHandler.clientSocket.recv(HEADER).decode(FORMAT)
         key = SocketHandler.clientSocket.recv(HEADER).decode(FORMAT)
-        print(key)
+
+        print("Public key: " + key)
 
     # Be aware that this method (currently) blocks while it waits for server to respond
     @staticmethod
