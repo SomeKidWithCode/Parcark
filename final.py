@@ -278,7 +278,7 @@ class SocketHandler:
         public_key = SocketHandler.receive()
 
         log("SocketHandler", "")
-        print("Public key: " + key)
+        print("Public key: " + public_key)
 
     # Be aware that this method (currently) blocks while it waits for server to respond
     @staticmethod
