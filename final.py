@@ -1,7 +1,6 @@
 # This is the final build file #
 
 # String.prototype.ljust(64, " ")
-# CARD should be the UID of the rfid tag
 
 # ---------- Imports ---------- #
 
@@ -22,12 +21,15 @@ import pytesseract, time, re, socket, binascii
 # Constant for the escape key when using cv.waitKey
 ESC_KEY = 27
 
-# Constant for the amount of money charged when exiting
+# Constant for the amount of money charged when exiting (in $)
 CHARGE_RATE = 5
 
 # Constants for the slicing dimensions for OCR
 OCR_SLICE_WIDTH = 700
 OCR_SLICE_HEIGHT = 200
+
+# Constant for UID file
+REGISTERED_CARDS_PATH = "home/username/Parcark/registered_cards.txt"
 
 # ----- Socket Constants ----- #
 
@@ -35,7 +37,7 @@ HEADER = 64                         # Header message size
 PORT = 50512                        # Server port
 FORMAT = "utf-8"                    # encode/decode format
 DISCONNECT_MESSAGE = "DISCONNECT"   # Disconnect message
-SERVER = "127.0.1.1"             # Sever IP Address
+SERVER = "127.0.1.1"                # Sever IP Address
 ADDR = (SERVER, PORT)               # IP-Port tuple
 
 # ---------- External Peripheral Creation ---------- #
@@ -52,8 +54,11 @@ if not camera.isOpened():
     print("Error: Could not open camera.")
     exit()
 
+# ---------- Main functions ---------- #
+
 def init():
     SocketHandler.init()
+    RFIDTagRegister.init()
 
 
     print("testing time :D")
@@ -63,21 +68,84 @@ def init():
     print(LPDatabase.pull(lP))
 
 
-    #log("init", "Entering main loop.")
-    #mainLoop()
+    log("init", "Entering main loop.")
+    mainLoop()
 
 def mainLoop():
-    getOCRResult()
+    #licensePlate = getOCRResult()
 
+    # Fake a license plate for testing
+    licensePlate = "ABCDEF"
+
+    if licensePlate:
+        print("Please present your RFID tag")
+        rfidTag = getRFID()
+        if RFIDTagRegister.verifyTag(rfidTag):
+            print("Your tag has been verified")
+            # The integer casts here are safe because they've already been verified
+            if LPDatabase.query(licensePlate):
+                LPDatabase.pull(licensePlate, int(rfidTag[0]))
+                print("Have a nice day! :D")
+            else:
+                LPDatabase.push(licensePlate, int(rfidTag[0]), int(rfidTag[1]))
+                print()
+        else:
+            print("This tag has not been registered or has a corrupted format\nWould you like to (re)register it now? [y/n]")
+            ans = input()
+            ans = lower(ans)
+            if ans == "y":
+                print("Please enter your PIN")
+                pin = getValidPin()
+
+                print("Enter the card\'s initial balance")
+                mons = getValidInitial()
+
+                RFIDTagRegister.registerCard(rfidTag[0], pin, mons)
+                print("Your tag has now been registered.\nPlease rescan your card to enter")
+            else:
+                print("LEAVE")
+        
+        # Return to null because we only want to test once
+        licensePlate = null
+
+def getValidPin():
+    pin = null
+    while True:
+        try:
+            pin = input()
+            if len(pin) == 4:
+                pin = int(pin)
+
+                break
+            else:
+                print("PIN must be 4 characters in length")
+            
+        except ValueError:
+            print("That is not a number")
+    return pin
+
+def getValidInitial():
+    initial = null
+    while True:
+        try:
+            initial = input()
+            initial = int(initial)
+            break
+        except ValueError:
+            print("That is not a number")
+    return initial
+
+
+# ----- This code is blocking ----- #
 def getOCRResult():
     sameResultCount = 0
-    ocrRes = None
+    ocrRes = null
 
     while True:
         # Get cam frame
         img = getCameraFrame(False)
 
-        if img is None:
+        if img is null:
             continue
 
 
@@ -127,7 +195,7 @@ def getOCRResult():
         # Use RegEx to filter the output so only characters we expect are outputed
         filteredText = "".join(re.findall("[0-9a-zA-Z-]", text))
 
-        if ocrRes == filteredText and ocrRes != "":
+        if ocrRes == filteredText and ocrRes != "" and len(filteredText) == 6:
             sameResultCount = sameResultCount + 1
         else:
             ocrRes = filteredText
@@ -142,93 +210,11 @@ def getOCRResult():
             break
     
     print(f"final result: {ocrRes}")
+    return ocrRes
 
-#def 
-
-# ---------- Testing Rig Code ---------- #
-
-# RFID test function
-def RFIDTest():
-    print("Started RFID test")
-
-    try:
-        while True:
-            print("Hold tag near reader")
-            tag_id, text = rfid.read()
-            print(f"ID: {tag_id}\nData: {text}")
-            rfid.write("E")
-    except KeyboardInterrupt:
-        GPIO.cleanup()
-
-# Database test function
-def DBTest():
-    print("Started database test")
-
-    lp1 = "Hippity hoppity, your soul is now my property"
-    lp2 = "nuh uh. WHAT DO YOU MEAN NUH UH?"
-
-    # Push normal test
-    LPDatabase.push(lp1)
-    print("Did push normal test")
-
-    # Push error test
-    try:
-        LPDatabase.push(lp1)
-    except Exception as e:
-        print(f"Received exception: {e}")
-    print("Did push error test")
-
-    # Pull normal test
-    val = LPDatabase.pull(lp1)
-    print(val)
-    print(f"Did pull normal test: {val}")
-
-    # Pull error test
-    try:
-        val = LPDatabase.pull(lp2)
-    except Exception as e:
-        print(f"Received exception: {e}")
-    print(val)
-    print("Did pull error test")
-
-# ---------- RFID Payment System ---------- #
-
-def chargeUserMoney():
-    try:
-        print("Present credit card")
-        _, text = rfid.read()
-        storedMoney = int(text)
-        print(f"Current card balance: ${storedMoney}")
-        print(f"Current charge rate: ${CHARGE_RATE}")
-        
-        if storedMoney >= CHARGE_RATE:
-            storedMoney -= CHARGE_RATE
-            rfid.write(str(storedMoney))
-            print(f"New card balance: ${storedMoney}")
-        else:
-            print("*Credit card declines*")
-            print("You do not have enough cash. Prepare to die.")
-        
-    except ValueError:
-        print("The rfid tag presented has not been formatted properly. Please use the \'Mon hax\' test to set card data")
-    except Exception as e:
-        print(f"An exception occured: {e}")
-
-# Debug function for writing money
-def moneyHax():
-    print("How much would you like to put on your card?")
-    try:
-        # We do this to verify the the user input a number
-        money = int(input())
-        print("Hold tag near reader")
-        # RFID only accepts strings
-        rfid.write(str(money))
-        print(f"Set money to {money}")
-    except ValueError:
-        print(f"{money} is not a number")
-        moneyHax()
-    except Exception as e:
-        print(f"An exception occured: {e}")
+def getRFID():
+    tagID, tagText = rfid.read()
+    return (tagID, tagText)
 
 # ---------- License Plate Database System ---------- #
 
@@ -236,14 +222,14 @@ class LPDatabase:
     lpDict = {}
 
     @staticmethod
-    def pull(licensePlate):
-        if licensePlate in LPDatabase.lpDict:
-            val = LPDatabase.lpDict[licensePlate]
+    def pull(uid, pin):
+        if uid in LPDatabase.lpDict:
+            val = LPDatabase.lpDict[uid]
             # Pop deletes an entry in a dictionary
-            LPDatabase.lpDict.pop(licensePlate)
+            LPDatabase.lpDict.pop(uid)
 
-            log("LPDatabase", "Attempting to charge {licensePlate}")
-            sckt_msg = SocketHandler.send(f"{DatabaseCommands.TRYCHARGE}:{licensePlate}:{6969}:{6.4}")
+            log("LPDatabase", f"Attempting to charge {uid}")
+            sckt_msg = SocketHandler.send(f"{DatabaseCommands.TRYCHARGE}:{uid}:{pin}:{CHARGE_RATE}")
             if sckt_msg == "NULL":
                 print("User account empty")
             else:
@@ -254,19 +240,24 @@ class LPDatabase:
             raise Exception("Unable to fetch time from non-existent entry")
 
     @staticmethod
-    def push(licensePlate):
-        if licensePlate in LPDatabase.lpDict:
+    def push(uid, pin, inital):
+        if uid in LPDatabase.lpDict:
             raise Exception("A duplicate license plate entry cannot exist")
         else:
-            LPDatabase.lpDict[licensePlate] = time.strftime("%H:%M:%S")
+            LPDatabase.lpDict[uid] = time.strftime("%H:%M:%S")
 
-            log("LPDatabase", f"Adding license plate '{licensePlate}' to register")
-            SocketHandler.send(f"{DatabaseCommands.REGISTERPLATE}:{licensePlate}:{6969}:{420}")
+            log("LPDatabase", f"Adding license plate '{uid}' to register")
+            SocketHandler.send(f"{DatabaseCommands.REGISTERCARD}:{uid}:{pin}:{inital}")
+    
+    @staticmethod
+    def query(uid):
+        return uid in LPDatabase.lpDict
 
 # ---------- Socket Handler Class ---------- #
 
 class SocketHandler:
-    clientSocket = None
+    clientSocket = null
+    publicKey = null
 
     @staticmethod
     def init():
@@ -278,21 +269,32 @@ class SocketHandler:
         public_key = SocketHandler.receive()
 
         log("SocketHandler", "Received public key")
-        print("Public key: " + public_key)
+        hexedKey = public_key.split(":")[1]
+        print("Public key: " + hexedKey)
+        SocketHandler.publicKey = binascii.unhexlify(hexedKey)
 
-    # Be aware that this method (currently) blocks while it waits for server to respond
+    # Be aware that this method blocks while it waits for server to respond
+    # This shouldn't be an issue as the server will always respond with something but it's good to know
     @staticmethod
     def send(send_msg):
-        message = send_msg.encode(FORMAT)
-        send_msg_length = len(message)
+        msg_bytes = encrypt(SocketHandler.publicKey, send_msg.encode(FORMAT))
+        send_msg_length = len(msg_bytes)
         send_length = str(send_msg_length).encode(FORMAT)
         send_length += b" " * (HEADER - len(send_length))
         SocketHandler.clientSocket.send(send_length)
-        SocketHandler.clientSocket.send(message)
+        SocketHandler.clientSocket.send(msg_bytes)
         log("SocketHandler", f"Sent message to '{SERVER}' on port '{PORT}': {send_msg}")
 
         receive_msg = SocketHandler.receive()
         log("SocketHandler", "Received message from {SERVER} on port {PORT}: {receive_msg}")
+
+        receive_key = SocketHandler.receive()
+        
+        log("SocketHandler", "Received public key")
+        hexedKey = public_key.split(":")[1]
+        print("Public key: " + hexedKey)
+        SocketHandler.publicKey = binascii.unhexlify(hexedKey)
+
         return receive_msg
     
     @staticmethod
@@ -311,18 +313,19 @@ class SocketHandler:
 class DatabaseCommands:
     TRYCHARGE = "TRYCHARGE"
     GETBANKBALANCE = "GETBANKBALANCE"
-    REGISTERPLATE = "REGISTERPLATE"
+    REGISTERCARD = "REGISTERCARD"
     DISCONNECT = DISCONNECT_MESSAGE
 
     GETPLATEINFO = 0xf
     SHUTDOWN = 0xff
 
+
 # ---------- En/Decryption Class ---------- #
 
 # That's just what I name classes that do both encryption and decryption
 class DicryptionHandler:
-    privateKey = None
-    publicKey = None
+    privateKey = null
+    publicKey = null
 
 
     @staticmethod
@@ -359,6 +362,58 @@ class DicryptionHandler:
 
         return decryptedText.decode(FORMAT)
 
+# ---------- RFID Tag Register ---------- #
+
+class RFIDTagRegister:
+    registeredCards = []
+
+    @staticmethod
+    def init():
+        rCardsFile = null
+        try:
+            rCardsFile = open(REGISTERED_CARDS_PATH, "r")
+            log("RFIDTagRegister", "Found registed cards file. Reading...")
+            for line in rCardsFile:
+                RFIDTagRegister.registeredCards.append(line)
+            log("RFIDTagRegister", f"Loaded {len(RFIDTagRegister.registeredCards)} cards")
+        except FileNotFoundError:
+            rCardsFile = open(REGISTERED_CARDS_PATH, "w")
+            log("RFIDTagRegister", "Registered cards file was not found. Generated new file.")
+        except Exception as e:
+            print(e)
+    
+    @staticmethod
+    def verifyTag(tagTuple):
+        splitValues = tagTuple[1].split(":")
+        try:
+            # 1, tag contents must be in the correct format and reletive type
+            if len(splitValues[0]) != 4:
+                # PIN must be 4 characters
+                return False
+
+            pin = int(splitValues[0])
+            inital = int(splitValues[1])
+        # ValueError means the conversion of at least one of these failed
+        except ValueError:
+            return False
+
+        # 2, tag must be in this register
+        return tagTuple[0] in RFIDTagRegister.registeredCards
+        
+    @staticmethod
+    def isCardRegistered(uid):
+        return includes(RFIDTagRegister.registeredCards, str(uid))
+    
+    @staticmethod
+    def registerCard(uid, pin, initalCardValue):
+        rfid.write(f"{pin}:{initalCardValue}")
+
+        # This is required because the card could already be registered but the formatting could be corrupt
+        if not includes(RFIDTagRegister.registeredCards, str(uid)):
+            RFIDTagRegister.registeredCards.append(str(uid))
+
+        log("RFIDTagRegister", f"Registered card with UID {uid}")
+
 # ---------- Quick functions for opening and closing the boomgate ---------- #
 
 def openBoomGate():
@@ -394,7 +449,7 @@ def cleanUpAndExit():
     # Exit the Python runtime
     exit()
 
-# Fn for exiting on Escape key
+# Fn for exiting on pressing the Escape key
 def exitOnEsc():
     if cv.waitKey(1) == ESC_KEY:
         return True
@@ -403,6 +458,15 @@ def exitOnEsc():
 def log(source, msg):
     print(f"[{time.strftime('%H:%M:%S')}] [{source}]: {msg}")
 
+# JS Array.prototype.includes logic for Python because for some reason there is no native method for this
+def includes(arr, val):
+    try:
+        return arr.index(val)
+    except ValueError:
+        return -1
+
+# Screw you Python. Only you and Lua are properly different and I let C++ because it's actually a good language
+null = None
 
 
 

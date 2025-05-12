@@ -52,6 +52,4 @@ def dicryptionTest():
     print(f"Decrypted message: {decMsg}")
 
 
-
 dicryptionTest()
-
