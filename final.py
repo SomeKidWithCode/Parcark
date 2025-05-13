@@ -108,8 +108,7 @@ def mainLoop():
                 print("LEAVE")
         
         # Return to null because we only want to test once
-        #licensePlate = null
-        mainLoop()
+        licensePlate = null
 
 def getValidPin():
     pin = null
@@ -217,7 +216,7 @@ def getOCRResult():
 
 def getRFID():
     tagID, tagText = rfid.read()
-    return (tagID, tagText)
+    return (tagID, tagText.strip())
 
 # ---------- License Plate Database System ---------- #
 
