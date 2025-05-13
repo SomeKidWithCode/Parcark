@@ -376,6 +376,7 @@ class RFIDTagRegister:
         try:
             RFIDTagRegister.rCardsFile = open(REGISTERED_CARDS_PATH, "r")
             log("RFIDTagRegister", "Found registed cards file. Reading...")
+
             for line in RFIDTagRegister.rCardsFile:
                 RFIDTagRegister.registeredCards.append(line)
             log("RFIDTagRegister", f"Loaded {len(RFIDTagRegister.registeredCards)} cards")
@@ -414,6 +415,8 @@ class RFIDTagRegister:
         # This is required because the card could already be registered but the formatting could be corrupt
         if not includes(RFIDTagRegister.registeredCards, str(uid)):
             RFIDTagRegister.registeredCards.append(str(uid))
+
+        print("includes: " + includes(RFIDTagRegister.registeredCards, str(uid)))
 
         log("RFIDTagRegister", f"Registered card with UID {uid}")
     
