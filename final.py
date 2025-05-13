@@ -289,10 +289,13 @@ class SocketHandler:
         receive_msg = SocketHandler.receive()
         log("SocketHandler", "Received message from {SERVER} on port {PORT}: {receive_msg}")
 
+        if send_msg == DISCONNECT_MESSAGE:
+            return null
+
         receive_key = SocketHandler.receive()
         
         log("SocketHandler", "Received public key")
-        hexedKey = public_key.split(":")[1]
+        hexedKey = receive_key.split(":")[1]
         print("Public key: " + hexedKey)
         SocketHandler.publicKey = binascii.unhexlify(hexedKey)
 
