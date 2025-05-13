@@ -71,6 +71,8 @@ def init():
     log("init", "Entering main loop.")
     mainLoop()
 
+    cleanUpAndExit()
+
 def mainLoop():
     #licensePlate = getOCRResult()
 
