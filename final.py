@@ -388,20 +388,27 @@ class RFIDTagRegister:
     
     @staticmethod
     def verifyTag(tagTuple):
+        print(tagTuple)
+
         splitValues = tagTuple[1].split(":")
         try:
             # 1, tag contents must be in the correct format and reletive type
             if len(splitValues[0]) != 4:
                 # PIN must be 4 characters
+                print("PIN not 4")
                 return False
 
             pin = int(splitValues[0])
             inital = int(splitValues[1])
         # ValueError means the conversion of at least one of these failed
         except ValueError:
+            print("conversion failed")
             return False
 
         # 2, tag must be in this register
+        if tagTuple[0] not in RFIDTagRegister.registeredCards:
+            print("not in")
+
         return tagTuple[0] in RFIDTagRegister.registeredCards
         
     @staticmethod
