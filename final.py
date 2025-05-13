@@ -37,7 +37,7 @@ HEADER = 64                         # Header message size
 PORT = 50512                        # Server port
 FORMAT = "utf-8"                    # encode/decode format
 DISCONNECT_MESSAGE = "DISCONNECT"   # Disconnect message
-SERVER = "127.0.1.1"                # Sever IP Address
+SERVER = "10.76.95.177"                # Sever IP Address
 ADDR = (SERVER, PORT)               # IP-Port tuple
 
 # Screw you Python. Only you and Lua are properly different and I let C++ because it's actually a good language
