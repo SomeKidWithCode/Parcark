@@ -477,9 +477,9 @@ def log(source, msg):
 # JS Array.prototype.includes logic for Python because for some reason there is no native method for this
 def includes(arr, val):
     try:
-        return arr.index(val)
+        return arr.index(val) > 0
     except ValueError:
-        return -1
+        return False
 
 
 
