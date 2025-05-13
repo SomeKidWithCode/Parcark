@@ -406,10 +406,10 @@ class RFIDTagRegister:
             return False
 
         # 2, tag must be in this register
-        if not includes(RFIDTagRegister.registeredCards, tagTuple[0]):
+        if not includes(RFIDTagRegister.registeredCards, str(tagTuple[0])):
             print("not in")
 
-        return includes(RFIDTagRegister.registeredCards, tagTuple[0])
+        return includes(RFIDTagRegister.registeredCards, str(tagTuple[0]))
         
     @staticmethod
     def isCardRegistered(uid):
