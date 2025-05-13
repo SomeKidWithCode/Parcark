@@ -419,8 +419,10 @@ class RFIDTagRegister:
     
     @staticmethod
     def save():
+        print(RFIDTagRegister.registeredCards)
         RFIDTagRegister.rCardsFile.write("\n".join(RFIDTagRegister.registeredCards))
         RFIDTagRegister.rCardsFile.close()
+        log("RFIDTagRegister", "Saved registered cards")
 
 # ---------- Quick functions for opening and closing the boomgate ---------- #
 
