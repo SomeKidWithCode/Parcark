@@ -91,7 +91,7 @@ def mainLoop():
             else:
                 splitTag = rfidTag[1].split(":")
                 LPDatabase.push(licensePlate, int(splitTag[0]), int(splitTag[1]))
-                print()
+                print("Enter the arena")
         else:
             print("This tag has not been registered or has a corrupted format\nWould you like to (re)register it now? [y/n]")
             ans = input().lower()
@@ -108,7 +108,8 @@ def mainLoop():
                 print("LEAVE")
         
         # Return to null because we only want to test once
-        licensePlate = null
+        #licensePlate = null
+        mainLoop()
 
 def getValidPin():
     pin = null
@@ -406,7 +407,7 @@ class RFIDTagRegister:
             print("bad convert")
             return False
 
-        print(includes(RFIDTagRegister.registeredCards, str(tagTuple[0])))
+        print("includes", includes(RFIDTagRegister.registeredCards, str(tagTuple[0])))
 
         # 2, tag must be in this register
         return includes(RFIDTagRegister.registeredCards, str(tagTuple[0]))
