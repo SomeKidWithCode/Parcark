@@ -89,7 +89,8 @@ def mainLoop():
                 LPDatabase.pull(licensePlate, int(rfidTag[0]))
                 print("Have a nice day! :D")
             else:
-                LPDatabase.push(licensePlate, int(rfidTag[0]), int(rfidTag[1]))
+                splitTag = rfidTag[1].split(":")
+                LPDatabase.push(licensePlate, int(splitTag[0]), int(splitTag[1]))
                 print()
         else:
             print("This tag has not been registered or has a corrupted format\nWould you like to (re)register it now? [y/n]")
@@ -395,20 +396,15 @@ class RFIDTagRegister:
             # 1, tag contents must be in the correct format and reletive type
             if len(splitValues[0]) != 4:
                 # PIN must be 4 characters
-                print("PIN not 4")
                 return False
 
             pin = int(splitValues[0])
             inital = int(splitValues[1])
         # ValueError means the conversion of at least one of these failed
         except ValueError:
-            print("conversion failed")
             return False
 
         # 2, tag must be in this register
-        if not includes(RFIDTagRegister.registeredCards, str(tagTuple[0])):
-            print("not in")
-
         return includes(RFIDTagRegister.registeredCards, str(tagTuple[0]))
         
     @staticmethod
