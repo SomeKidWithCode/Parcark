@@ -29,7 +29,7 @@ OCR_SLICE_WIDTH = 700
 OCR_SLICE_HEIGHT = 200
 
 # Constant for UID file
-REGISTERED_CARDS_PATH = "home/username/Parcark/registered_cards.txt"
+REGISTERED_CARDS_PATH = "/home/username/Parcark/registered_cards.txt"
 
 # ----- Socket Constants ----- #
 
@@ -66,11 +66,6 @@ def init():
 
     print("testing time :D")
 
-    lP = "ABCXYZ"
-    LPDatabase.push(lP)
-    print(LPDatabase.pull(lP))
-
-
     log("init", "Entering main loop.")
     mainLoop()
 
@@ -94,8 +89,7 @@ def mainLoop():
                 print()
         else:
             print("This tag has not been registered or has a corrupted format\nWould you like to (re)register it now? [y/n]")
-            ans = input()
-            ans = lower(ans)
+            ans = input().lower()
             if ans == "y":
                 print("Please enter your PIN")
                 pin = getValidPin()
@@ -369,18 +363,18 @@ class DicryptionHandler:
 
 class RFIDTagRegister:
     registeredCards = []
+    rCardsFile = null
 
     @staticmethod
     def init():
-        rCardsFile = null
         try:
-            rCardsFile = open(REGISTERED_CARDS_PATH, "r")
+            RFIDTagRegister.rCardsFile = open(REGISTERED_CARDS_PATH, "r")
             log("RFIDTagRegister", "Found registed cards file. Reading...")
             for line in rCardsFile:
                 RFIDTagRegister.registeredCards.append(line)
             log("RFIDTagRegister", f"Loaded {len(RFIDTagRegister.registeredCards)} cards")
         except FileNotFoundError:
-            rCardsFile = open(REGISTERED_CARDS_PATH, "w")
+            RFIDTagRegister.rCardsFile = open(REGISTERED_CARDS_PATH, "w")
             log("RFIDTagRegister", "Registered cards file was not found. Generated new file.")
         except Exception as e:
             print(e)
@@ -416,6 +410,10 @@ class RFIDTagRegister:
             RFIDTagRegister.registeredCards.append(str(uid))
 
         log("RFIDTagRegister", f"Registered card with UID {uid}")
+    
+    @staticmethod
+    def save():
+        RFIDTagRegister.rCardsFile.close()
 
 # ---------- Quick functions for opening and closing the boomgate ---------- #
 
@@ -448,6 +446,9 @@ def cleanUpAndExit():
 
     # Disconnect from the socket
     SocketHandler.disconnect()
+
+    # Save the registered cards file
+    RFIDTagRegister.save()
 
     # Exit the Python runtime
     exit()
