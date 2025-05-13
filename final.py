@@ -40,6 +40,9 @@ DISCONNECT_MESSAGE = "DISCONNECT"   # Disconnect message
 SERVER = "127.0.1.1"                # Sever IP Address
 ADDR = (SERVER, PORT)               # IP-Port tuple
 
+# Screw you Python. Only you and Lua are properly different and I let C++ because it's actually a good language
+null = None
+
 # ---------- External Peripheral Creation ---------- #
 
 # Create servo object
@@ -464,9 +467,6 @@ def includes(arr, val):
         return arr.index(val)
     except ValueError:
         return -1
-
-# Screw you Python. Only you and Lua are properly different and I let C++ because it's actually a good language
-null = None
 
 
 
