@@ -287,7 +287,7 @@ class SocketHandler:
         log("SocketHandler", f"Sent message to '{SERVER}' on port '{PORT}': {send_msg}")
 
         receive_msg = SocketHandler.receive()
-        log("SocketHandler", "Received message from {SERVER} on port {PORT}: {receive_msg}")
+        log("SocketHandler", f"Received message from {SERVER} on port {PORT}: {receive_msg}")
 
         if send_msg == DISCONNECT_MESSAGE:
             return null
@@ -376,7 +376,7 @@ class RFIDTagRegister:
         try:
             RFIDTagRegister.rCardsFile = open(REGISTERED_CARDS_PATH, "r")
             log("RFIDTagRegister", "Found registed cards file. Reading...")
-            for line in rCardsFile:
+            for line in RFIDTagRegister.rCardsFile:
                 RFIDTagRegister.registeredCards.append(line)
             log("RFIDTagRegister", f"Loaded {len(RFIDTagRegister.registeredCards)} cards")
         except FileNotFoundError:
