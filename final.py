@@ -416,8 +416,6 @@ class RFIDTagRegister:
         if not includes(RFIDTagRegister.registeredCards, str(uid)):
             RFIDTagRegister.registeredCards.append(str(uid))
 
-        print("includes: " + includes(RFIDTagRegister.registeredCards, str(uid)))
-
         log("RFIDTagRegister", f"Registered card with UID {uid}")
     
     @staticmethod
