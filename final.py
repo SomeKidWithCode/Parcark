@@ -16,6 +16,8 @@ from ecies import encrypt, decrypt
 
 import pytesseract, time, re, socket, binascii
 
+GPIO.setwarnings(False)
+
 # ---------- Constant Variables ---------- #
 
 # Constant for the escape key when using cv.waitKey
@@ -316,7 +318,6 @@ class DatabaseCommands:
     GETPLATEINFO = 0xf
     SHUTDOWN = 0xff
 
-
 # ---------- En/Decryption Class ---------- #
 
 # That's just what I name classes that do both encryption and decryption
@@ -413,6 +414,7 @@ class RFIDTagRegister:
     
     @staticmethod
     def save():
+        RFIDTagRegister.rCardsFile.write("\n".join(RFIDTagRegister.registeredCards))
         RFIDTagRegister.rCardsFile.close()
 
 # ---------- Quick functions for opening and closing the boomgate ---------- #
