@@ -396,13 +396,17 @@ class RFIDTagRegister:
             # 1, tag contents must be in the correct format and reletive type
             if len(splitValues[0]) != 4:
                 # PIN must be 4 characters
+                print("not 4")
                 return False
 
             pin = int(splitValues[0])
             inital = int(splitValues[1])
         # ValueError means the conversion of at least one of these failed
         except ValueError:
+            print("bad convert")
             return False
+
+        print(includes(RFIDTagRegister.registeredCards, str(tagTuple[0])))
 
         # 2, tag must be in this register
         return includes(RFIDTagRegister.registeredCards, str(tagTuple[0]))
