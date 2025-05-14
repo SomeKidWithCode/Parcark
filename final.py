@@ -30,7 +30,7 @@ CHARGE_RATE = 5
 OCR_SLICE_WIDTH = 700
 OCR_SLICE_HEIGHT = 200
 
-# Constant for UID file
+# Constant for UID file path
 REGISTERED_CARDS_PATH = "/home/username/Parcark/registered_cards.txt"
 
 # ----- Socket Constants ----- #
@@ -39,7 +39,7 @@ HEADER = 64                         # Header message size
 PORT = 50512                        # Server port
 FORMAT = "utf-8"                    # encode/decode format
 DISCONNECT_MESSAGE = "DISCONNECT"   # Disconnect message
-SERVER = "10.76.95.177"                # Sever IP Address
+SERVER = "10.76.95.177"             # Sever IP Address
 ADDR = (SERVER, PORT)               # IP-Port tuple
 
 # Screw you Python. Only you and Lua are properly different and I let C++ because it's actually a good language
@@ -136,7 +136,6 @@ def getValidInitial():
         except ValueError:
             print("That is not a number")
     return initial
-
 
 # ----- This code is blocking ----- #
 def getOCRResult():
@@ -272,11 +271,10 @@ class SocketHandler:
 
         log("SocketHandler", "Received public key")
         hexedKey = public_key.split(":")[1]
-        print("Public key: " + hexedKey)
         SocketHandler.publicKey = binascii.unhexlify(hexedKey)
 
-    # Be aware that this method blocks while it waits for server to respond
-    # This shouldn't be an issue as the server will always respond with something but it's good to know
+    # Be aware that this method blocks while it waits for the server to respond.
+    # This shouldn't be an issue, as the server will always respond with something, but it's good to know.
     @staticmethod
     def send(send_msg):
         msg_bytes = encrypt(SocketHandler.publicKey, send_msg.encode(FORMAT))
@@ -285,10 +283,10 @@ class SocketHandler:
         send_length += b" " * (HEADER - len(send_length))
         SocketHandler.clientSocket.send(send_length)
         SocketHandler.clientSocket.send(msg_bytes)
-        log("SocketHandler", f"Sent message to '{SERVER}' on port '{PORT}': {send_msg}")
+        log("SocketHandler", f"Sent message to '{SERVER}' on port '{PORT}': '{send_msg}'")
 
         receive_msg = SocketHandler.receive()
-        log("SocketHandler", f"Received message from {SERVER} on port {PORT}: {receive_msg}")
+        log("SocketHandler", f"Received message from '{SERVER}' on port '{PORT}': '{receive_msg}'")
 
         if send_msg == DISCONNECT_MESSAGE:
             return null
@@ -297,7 +295,6 @@ class SocketHandler:
         
         log("SocketHandler", "Received public key")
         hexedKey = receive_key.split(":")[1]
-        print("Public key: " + hexedKey)
         SocketHandler.publicKey = binascii.unhexlify(hexedKey)
 
         return receive_msg
@@ -324,48 +321,6 @@ class DatabaseCommands:
     GETPLATEINFO = 0xf
     SHUTDOWN = 0xff
 
-# ---------- En/Decryption Class ---------- #
-
-# That's just what I name classes that do both encryption and decryption
-class DicryptionHandler:
-    privateKey = null
-    publicKey = null
-
-
-    @staticmethod
-    def generateKeys():
-        log("DicryptionHandler", "Generating new key pair...")
-        key = generate_key()
-
-        DicryptionHandler.privateKey = binascii.hexlify(key.secret)
-        DicryptionHandler.publicKey = binascii.hexlify(key.public_key.format(True))
-
-        log("DicryptionHandler", "Generated new key pair")
-
-    @staticmethod
-    def encryptText(text):
-        DicryptionHandler.generateKeys()
-
-        log("DicryptionHandler", "Attempting to encrypt message")
-
-        unhexedPublicKey = binascii.unhexlify(DicryptionHandler.publicKey)
-
-        encryptedText = encrypt(unhexedPublicKey, text.encode(FORMAT))
-
-        return binascii.hexlify(encryptedText)
-
-    @staticmethod    
-    def decryptText(text):
-        log("DicryptionHandler", "Attempting to decrypt message")
-
-        unhexedPrivateKey = binascii.unhexlify(DicryptionHandler.privateKey)
-
-        unhexedText = binascii.unhexlify(text)
-
-        decryptedText = decrypt(unhexedPrivateKey, unhexedText)
-
-        return decryptedText.decode(FORMAT)
-
 # ---------- RFID Tag Register ---------- #
 
 class RFIDTagRegister:
@@ -389,8 +344,6 @@ class RFIDTagRegister:
     
     @staticmethod
     def verifyTag(tagTuple):
-        print(tagTuple)
-
         splitValues = tagTuple[1].split(":")
         try:
             # 1, tag contents must be in the correct format and reletive type
@@ -427,7 +380,6 @@ class RFIDTagRegister:
     
     @staticmethod
     def save():
-        print(RFIDTagRegister.registeredCards)
         RFIDTagRegister.rCardsFile.write("\n".join(RFIDTagRegister.registeredCards))
         RFIDTagRegister.rCardsFile.close()
         log("RFIDTagRegister", "Saved registered cards")
