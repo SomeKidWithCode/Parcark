@@ -164,11 +164,12 @@ def getOCRResult():
         mid_x, mid_y = width // 2, height // 2
         
         # Calculate crop boundaries
-        cw2, ch2 = OCR_SLICE_WIDTH // 2, OCR_SLICE_HEIGHT // 2
-        x_start = mid_x - cw2
-        x_end = mid_x + cw2 + (OCR_SLICE_WIDTH % 2)  # Handles odd widths
-        y_start = mid_y - ch2
-        y_end = mid_y + ch2 + (OCR_SLICE_HEIGHT % 2)  # Handles odd heights
+        halfSliceWidth, halfSliceHeight = OCR_SLICE_WIDTH // 2, OCR_SLICE_HEIGHT // 2
+        x_start = mid_x - halfSliceWidth
+        y_start = mid_y - halfSliceHeight
+
+        x_end = mid_x + halfSliceWidth      # Handles odd widths
+        y_end = mid_y + halfSliceHeight     # Handles odd heights
         
         # Perform the crop
         img = img[y_start:y_end, x_start:x_end]
