@@ -74,10 +74,10 @@ def init():
     cleanUpAndExit()
 
 def mainLoop():
-    #licensePlate = getOCRResult()
+    licensePlate = getOCRResult()
 
     # Fake a license plate for testing
-    licensePlate = "ABCDEF"
+    #licensePlate = "ABCDEF"
 
     if licensePlate:
         print("Please present your RFID tag")
@@ -88,10 +88,16 @@ def mainLoop():
             if LPDatabase.query(licensePlate):
                 LPDatabase.pull(licensePlate, int(rfidTag[0]))
                 print("Have a nice day! :D")
+                openBoomGate()
+                sleep(5)
+                closeBoomGate()
             else:
                 splitTag = rfidTag[1].split(":")
                 LPDatabase.push(licensePlate, int(splitTag[0]), int(splitTag[1]))
                 print("Enter the arena")
+                openBoomGate()
+                sleep(5)
+                closeBoomGate()
         else:
             print("This tag has not been registered or has a corrupted format\nWould you like to (re)register it now? [y/n]")
             ans = input().lower()
@@ -354,17 +360,13 @@ class RFIDTagRegister:
             # 1, tag contents must be in the correct format and reletive type
             if len(splitValues[0]) != 4:
                 # PIN must be 4 characters
-                print("not 4")
                 return False
 
             pin = int(splitValues[0])
             inital = int(splitValues[1])
         # ValueError means the conversion of at least one of these failed
         except ValueError:
-            print("bad convert")
             return False
-
-        print("includes", includes(RFIDTagRegister.registeredCards, str(tagTuple[0])))
 
         # 2, tag must be in this register
         return includes(RFIDTagRegister.registeredCards, str(tagTuple[0]))
