@@ -1,6 +1,7 @@
 # This is the final build file #
 
 # String.prototype.ljust(64, " ")
+# Images have the default size of 640x480
 
 # ---------- Imports ---------- #
 
@@ -27,8 +28,8 @@ ESC_KEY = 27
 CHARGE_RATE = 5
 
 # Constants for the slicing dimensions for OCR
-OCR_SLICE_WIDTH = 200
-OCR_SLICE_HEIGHT = 200
+OCR_SLICE_WIDTH = 640
+OCR_SLICE_HEIGHT = 240
 
 # Constant for UID file path
 REGISTERED_CARDS_PATH = "/home/username/Parcark/registered_cards.txt"
@@ -74,47 +75,54 @@ def init():
     cleanUpAndExit()
 
 def mainLoop():
-    licensePlate = getOCRResult()
+    while True:
+        if exitOnEsc():
+            break
 
-    # Fake a license plate for testing
-    #licensePlate = "ABCDEF"
+        licensePlate = getOCRResult()
 
-    if licensePlate:
-        print("Please present your RFID tag")
-        rfidTag = getRFID()
-        if RFIDTagRegister.verifyTag(rfidTag):
-            print("Your tag has been verified")
-            # The integer casts here are safe because they've already been verified
-            if LPDatabase.query(licensePlate):
-                LPDatabase.pull(licensePlate, int(rfidTag[0]))
-                print("Have a nice day! :D")
-                openBoomGate()
-                sleep(5)
-                closeBoomGate()
+        # Fake a license plate for testing
+        #licensePlate = "ABCDEF"
+
+        if licensePlate:
+            print("Please present your RFID tag")
+            rfidTag = getRFID()
+            if RFIDTagRegister.verifyTag(rfidTag):
+                print("Your tag has been verified")
+                # The integer casts here are safe because they've already been verified
+                if LPDatabase.query(licensePlate):
+                    LPDatabase.pull(licensePlate, int(rfidTag[0]))
+                    print("Have a nice day! :D")
+                    openBoomGate()
+                    sleep(5)
+                    closeBoomGate()
+                else:
+                    splitTag = rfidTag[1].split(":")
+                    LPDatabase.push(licensePlate, int(splitTag[0]), int(splitTag[1]))
+                    print("Enter the arena")
+                    openBoomGate()
+                    sleep(5)
+                    closeBoomGate()
             else:
-                splitTag = rfidTag[1].split(":")
-                LPDatabase.push(licensePlate, int(splitTag[0]), int(splitTag[1]))
-                print("Enter the arena")
-                openBoomGate()
-                sleep(5)
-                closeBoomGate()
-        else:
-            print("This tag has not been registered or has a corrupted format\nWould you like to (re)register it now? [y/n]")
-            ans = input().lower()
-            if ans == "y":
-                print("Please enter your PIN")
-                pin = getValidPin()
+                print("This tag has not been registered or has a corrupted format\nWould you like to (re)register it now? [y/n]")
+                ans = input().lower()
+                if ans == "y":
+                    print("Please enter your PIN")
+                    pin = getValidPin()
 
-                print("Enter the card\'s initial balance")
-                mons = getValidInitial()
+                    print("Enter the card\'s initial balance")
+                    mons = getValidInitial()
 
-                RFIDTagRegister.registerCard(rfidTag[0], pin, mons)
-                print("Your tag has now been registered.\nPlease rescan your card to enter")
-            else:
-                print("LEAVE")
-        
-        # Return to null because we only want to test once
-        licensePlate = null
+                    RFIDTagRegister.registerCard(rfidTag[0], pin, mons)
+                    print("Your tag has now been registered.\nPlease rescan your card to enter")
+                else:
+                    print("LEAVE")
+            
+            # Return to null because we only want to test once
+            #licensePlate = null
+    
+    # Upon breaking out of the loop, clean up
+    cleanUpAndExit()
 
 def getValidPin():
     pin = null
@@ -174,6 +182,9 @@ def getOCRResult():
         # Perform the crop
         img = img[y_start:y_end, x_start:x_end]
 
+        # Rescale for a smaller image, making it process faster
+        img = cv.resize(img, (320, 120))
+
 
 
         # Turn the image into a ndarray object
@@ -190,7 +201,7 @@ def getOCRResult():
         # Applies normalisation. Since I can't understand the documentation for this, I assume that it means mapping the colors of the array
         img = cv.normalize(img, img_empty, 0, 255, cv.NORM_MINMAX)
         # According to the docs, applies a threshold mechanic, as to effectively limit pixels colors whose values are to small or large
-        img = cv.threshold(img, 100, 255, cv.THRESH_BINARY)[1]
+        img = cv.threshold(img, 175, 255, cv.THRESH_BINARY)[1]
         # This applies a Gaussian filter. Magic really.
         img = cv.GaussianBlur(img, (1, 1), 0)
 
