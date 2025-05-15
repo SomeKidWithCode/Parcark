@@ -203,7 +203,7 @@ def getOCRResult():
         # Use RegEx to filter the output so only characters we expect are outputed
         filteredText = "".join(re.findall("[0-9a-zA-Z-]", text))
 
-        if ocrRes == filteredText and ocrRes != ""''' and len(filteredText) == 6''':
+        if filteredText and ocrRes == filteredText and ocrRes != ""''' and len(filteredText) == 6''':
             sameResultCount = sameResultCount + 1
         else:
             ocrRes = filteredText
