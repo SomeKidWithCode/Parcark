@@ -27,7 +27,7 @@ ESC_KEY = 27
 CHARGE_RATE = 5
 
 # Constants for the slicing dimensions for OCR
-OCR_SLICE_WIDTH = 700
+OCR_SLICE_WIDTH = 200
 OCR_SLICE_HEIGHT = 200
 
 # Constant for UID file path
