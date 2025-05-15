@@ -14,7 +14,7 @@ from mfrc522 import SimpleMFRC522
 from ecies.utils import generate_key
 from ecies import encrypt, decrypt
 
-import pytesseract, time, re, socket, binascii
+import pytesseract, time, re, socket, binascii, os.path
 
 GPIO.setwarnings(False)
 
@@ -330,15 +330,15 @@ class RFIDTagRegister:
     @staticmethod
     def init():
         try:
-            RFIDTagRegister.rCardsFile = open(REGISTERED_CARDS_PATH, "r")
-            log("RFIDTagRegister", "Found registed cards file. Reading...")
-
+            if os.path.exists(REGISTERED_CARDS_PATH):
+                log("RFIDTagRegister", "Found registed cards file. Reading...")
+            else:
+                log("RFIDTagRegister", "Registered cards file was not found. Generated new file.")
+    
+            RFIDTagRegister.rCardsFile = open(REGISTERED_CARDS_PATH, "a")
             for line in RFIDTagRegister.rCardsFile:
                 RFIDTagRegister.registeredCards.append(line)
             log("RFIDTagRegister", f"Loaded {len(RFIDTagRegister.registeredCards)} cards")
-        except FileNotFoundError:
-            RFIDTagRegister.rCardsFile = open(REGISTERED_CARDS_PATH, "w")
-            log("RFIDTagRegister", "Registered cards file was not found. Generated new file.")
         except Exception as e:
             print(e)
     
