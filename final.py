@@ -334,13 +334,13 @@ class RFIDTagRegister:
                 log("RFIDTagRegister", "Found registed cards file. Reading...")
             else:
                 log("RFIDTagRegister", "Registered cards file was not found. Generated new file.")
-    
-            RFIDTagRegister.rCardsFile = open(REGISTERED_CARDS_PATH, "a")
+
+            RFIDTagRegister.rCardsFile = open(REGISTERED_CARDS_PATH, "w")
             for line in RFIDTagRegister.rCardsFile:
                 RFIDTagRegister.registeredCards.append(line)
             log("RFIDTagRegister", f"Loaded {len(RFIDTagRegister.registeredCards)} cards")
         except Exception as e:
-            print(e)
+            print(f"Exception initalizing RFIDTagRegister: {e}")
     
     @staticmethod
     def verifyTag(tagTuple):
