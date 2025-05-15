@@ -330,15 +330,20 @@ class RFIDTagRegister:
     @staticmethod
     def init():
         try:
+            # As you can only have the file open in one state (read or write)
+            # We need to check if it exists first
+            # If it does, we open it in reading mode first and read it
+            # If not, then we (re)open it in writing mode
             if os.path.exists(REGISTERED_CARDS_PATH):
-                log("RFIDTagRegister", "Found registed cards file. Reading...")
+                log("RFIDTagRegister", "Found registered cards file. Reading...")
+                RFIDTagRegister.rCardsFile = open(REGISTERED_CARDS_PATH, "r")
+                for line in RFIDTagRegister.rCardsFile:
+                    RFIDTagRegister.registeredCards.append(line)
+                log("RFIDTagRegister", f"Loaded {len(RFIDTagRegister.registeredCards)} cards")
             else:
                 log("RFIDTagRegister", "Registered cards file was not found. Generated new file.")
-
+                
             RFIDTagRegister.rCardsFile = open(REGISTERED_CARDS_PATH, "w")
-            for line in RFIDTagRegister.rCardsFile:
-                RFIDTagRegister.registeredCards.append(line)
-            log("RFIDTagRegister", f"Loaded {len(RFIDTagRegister.registeredCards)} cards")
         except Exception as e:
             print(f"Exception initalizing RFIDTagRegister: {e}")
     
