@@ -90,14 +90,14 @@ def mainLoop():
             if RFIDTagRegister.verifyTag(rfidTag):
                 print("Your tag has been verified")
                 # The integer casts here are safe because they've already been verified
+                splitTag = rfidTag[1].split(":")
                 if LPDatabase.query(licensePlate):
-                    LPDatabase.pull(licensePlate, int(rfidTag[0]))
+                    LPDatabase.pull(licensePlate, int(splitTag[1]))
                     print("Have a nice day! :D")
                     openBoomGate()
                     sleep(5)
                     closeBoomGate()
                 else:
-                    splitTag = rfidTag[1].split(":")
                     LPDatabase.push(licensePlate, int(splitTag[0]), int(splitTag[1]))
                     print("Enter the arena")
                     openBoomGate()
@@ -214,7 +214,7 @@ def getOCRResult():
         # Use RegEx to filter the output so only characters we expect are outputed
         filteredText = "".join(re.findall("[0-9A-Z-]", text)).replace("0", "O")
 
-        if filteredText and ocrRes == filteredText and ocrRes != "" and len(filteredText) == 6:
+        if filteredText and ocrRes == filteredText and ocrRes != "" and len(filteredText) >= 6:
             sameResultCount = sameResultCount + 1
         else:
             ocrRes = filteredText
