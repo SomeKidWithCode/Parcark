@@ -92,7 +92,7 @@ def mainLoop():
                 # The integer casts here are safe because they've already been verified
                 splitTag = rfidTag[1].split(":")
                 if LPDatabase.query(licensePlate):
-                    LPDatabase.pull(licensePlate, int(splitTag[1]))
+                    LPDatabase.pull(licensePlate, int(splitTag[0]))
                     print("Have a nice day! :D")
                     openBoomGate()
                     sleep(5)
