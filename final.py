@@ -212,7 +212,7 @@ def getOCRResult():
         text = pytesseract.image_to_string(img)
 
         # Use RegEx to filter the output so only characters we expect are outputed
-        filteredText = "".join(re.findall("[0-9a-zA-Z-]", text))
+        filteredText = "".join(re.findall("[0-9A-Z-]", text)).replace("0", "O")
 
         if filteredText and ocrRes == filteredText and ocrRes != ""''' and len(filteredText) == 6''':
             sameResultCount = sameResultCount + 1
