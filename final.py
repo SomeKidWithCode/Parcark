@@ -1,6 +1,7 @@
 # This is the final build file #
 
 # Images have the default size of 640x480
+# To use it now, you have to run 'sudo pigpiod' to start the factory daemon
 
 # ---------- Imports ---------- #
 
