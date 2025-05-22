@@ -49,5 +49,17 @@ well, we just ask to reformate and stuff, no big deal
 after much frenzied typing, i think ive fix this system for now.
 this is ready for testing
 
+(engaging final stand)
 
+ERRORS:
+* ERROR0 - Pin is wrong (TRYCHARGE)
+* ERROR1 - User does not have sufficient balance to make the transaction (TRYCHARGE)
+* ERROR2 - User does not exist (GETPLATEINFO, TRYCHARGE)
+* ERROR3 - User already exists (REGISTERPLATE)
+* ERROR4 - Invalid Authcode (SHUTDOWN)
 
+Commands:
+* TRYCHARGE:[CARDNUMBER]:[PIN]:[AMOUNT]
+* GETBANKBALANCE
+* GETCARDINFO:[CARDNUMBER]
+* REGISTERCARD:[CARD]:[PIN]:[BALANCE]

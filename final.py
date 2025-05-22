@@ -87,23 +87,8 @@ def mainLoop():
         if licensePlate:
             print("Please present your RFID tag")
             rfidTag = getRFID()
-            if RFIDTagRegister.verifyTag(rfidTag):
-                print("Your tag has been verified")
-                # The integer casts here are safe because they've already been verified
-                splitTag = rfidTag[1].split(":")
-                if LPDatabase.query(licensePlate):
-                    LPDatabase.pull(licensePlate, int(splitTag[0]))
-                    print("Have a nice day! :D")
-                    openBoomGate()
-                    sleep(5)
-                    closeBoomGate()
-                else:
-                    LPDatabase.push(licensePlate, int(splitTag[0]), int(splitTag[1]))
-                    print("Enter the arena")
-                    openBoomGate()
-                    sleep(5)
-                    closeBoomGate()
-            else:
+
+            if not RFIDTagRegister.verifyTag(rfidTag):
                 print("This tag has not been registered or has a corrupted format\nWould you like to (re)register it now? [y/n]")
                 ans = input().lower()
                 if ans == "y":
@@ -116,7 +101,27 @@ def mainLoop():
                     RFIDTagRegister.registerCard(rfidTag[0], pin, mons)
                     print("Your tag has now been registered.\nPlease rescan your card to enter")
                 else:
-                    print("LEAVE")
+                    print("PREPARING ORBITAL STRIKE CANNON")
+                
+            else:
+                print("Your tag has been verified")
+
+            # The integer casts here are safe because they've already been verified
+            splitTag = rfidTag[1].split(":")
+            if LPDatabase.query(licensePlate):
+                LPDatabase.pull(licensePlate, int(splitTag[0]))
+                print("Have a nice day! :D")
+                openBoomGate()
+                sleep(5)
+                closeBoomGate()
+            else:
+                LPDatabase.push(licensePlate, int(splitTag[0]), int(splitTag[1]))
+                print("Enter the arena")
+                openBoomGate()
+                sleep(5)
+                closeBoomGate()
+
+            
             
             # Return to null because we only want to test once
             #licensePlate = null
