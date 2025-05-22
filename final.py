@@ -84,8 +84,8 @@ def mainLoop():
 
         licensePlate = getOCRResult()
 
-        # Fake a license plate for testing
-        #licensePlate = "ABCDEF"
+        if exitOnEsc():
+            break
 
         if licensePlate:
             print("Please present your RFID tag")
@@ -124,10 +124,6 @@ def mainLoop():
                 sleep(5)
                 closeBoomGate()
 
-            
-            
-            # Return to null because we only want to test once
-            #licensePlate = null
     
     # Upon breaking out of the loop, clean up
     cleanUpAndExit()
