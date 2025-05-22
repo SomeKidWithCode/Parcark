@@ -1,6 +1,5 @@
 # This is the final build file #
 
-# String.prototype.ljust(64, " ")
 # Images have the default size of 640x480
 
 # ---------- Imports ---------- #
@@ -14,6 +13,7 @@ from gpiozero import AngularServo
 from mfrc522 import SimpleMFRC522
 from ecies.utils import generate_key
 from ecies import encrypt, decrypt
+from gpiozero.pins.pigpio import PiGPIOFactory
 
 import pytesseract, time, re, socket, binascii, os.path
 
@@ -51,8 +51,11 @@ flags = "HALF_MAST"
 
 # ---------- External Peripheral Creation ---------- #
 
+# Create PIGPIO factory
+factory = PiGPIOFactory()
+
 # Create servo object
-servo = AngularServo(18, min_pulse_width = 0.0005, max_pulse_width = 0.0025)
+servo = AngularServo(18, min_pulse_width = 0.0005, max_pulse_width = 0.0025, pin_factory = factory)
 
 # Create rfid object
 rfid = SimpleMFRC522()
