@@ -54,8 +54,8 @@ this is ready for testing
 ERRORS:
 * ERROR0 - Pin is wrong (TRYCHARGE)
 * ERROR1 - User does not have sufficient balance to make the transaction (TRYCHARGE)
-* ERROR2 - User does not exist (GETPLATEINFO, TRYCHARGE)
-* ERROR3 - User already exists (REGISTERPLATE)
+* ERROR2 - User does not exist (GETCARDINFO, TRYCHARGE)
+* ERROR3 - User already exists (REGISTERCARD)
 * ERROR4 - Invalid Authcode (SHUTDOWN)
 
 Commands:

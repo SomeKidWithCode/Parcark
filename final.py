@@ -277,8 +277,13 @@ class LPDatabase:
         else:
             LPDatabase.lpDict[uid] = time.strftime("%H:%M:%S")
 
-            log("LPDatabase", f"Adding license plate '{uid}' to register")
-            SocketHandler.send(f"{DatabaseCommands.REGISTERCARD}:{uid}:{pin}:{inital}")
+            log("LPDatabase", f"Attempting to add license plate '{uid}' to register...")
+            response = SocketHandler.send(f"{DatabaseCommands.REGISTERCARD}:{uid}:{pin}:{inital}")
+            if response == "ERROR3":
+                print("This user already exists")
+            else:
+                log("LPDatabase", f"Card registered successfully")
+                print("Add successful")
     
     @staticmethod
     def query(uid):
