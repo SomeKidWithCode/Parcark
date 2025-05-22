@@ -73,9 +73,10 @@ def init():
     print("testing time :D")
 
     log("init", "Entering main loop.")
-    mainLoop()
-
-    cleanUpAndExit()
+    try:
+        mainLoop()
+    finally:
+        cleanUpAndExit()
 
 def mainLoop():
     while True:
