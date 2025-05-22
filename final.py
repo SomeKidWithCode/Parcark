@@ -46,6 +46,9 @@ ADDR = (SERVER, PORT)               # IP-Port tuple
 # Screw you Python. Only you and Lua are properly different and I let C++ because it's actually a good language
 null = None
 
+# For the cone
+flags = "HALF_MAST"
+
 # ---------- External Peripheral Creation ---------- #
 
 # Create servo object
@@ -254,8 +257,12 @@ class LPDatabase:
 
             log("LPDatabase", f"Attempting to charge {uid}")
             sckt_msg = SocketHandler.send(f"{DatabaseCommands.TRYCHARGE}:{uid}:{pin}:{CHARGE_RATE}")
-            if sckt_msg == "NULL":
-                print("User account empty")
+            if sckt_msg == "ERROR1":
+                print("User doesn\'t have enough mons to complete the transaction")
+            elif sckt_msg == "ERROR0":
+                print("PIN is wrong")
+            elif sckt_msg == "ERROR2":
+                print("YOU DO NOT EXIST. WAKE UP.")
             else:
                 print("Charge successful")
 
